@@ -2,8 +2,11 @@ package com.upmc.stl.framework.response.enums;
 
 // TODO: 16/02/16 Remplir avec les headers à implémenter
 public enum EResponseHeaderItem {
+    CONTENT_ENCODING("Content-Encoding"),
     CONTENT_LENGTH("Content-Length"),
-    CONTENT_TYPE("Content-Type");
+    CONTENT_TYPE("Content-Type"),
+    DATE("Date") // RFC 1123-[8] format
+    ;
 
     private String name;
 

@@ -1,11 +1,13 @@
-package com.upmc.stl.framework.process;
+package com.upmc.stl.framework;
+
+import com.upmc.stl.framework.server.ServerEcho;
 
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
-        Server server = new Server(1234);
+        ServerEcho server = new ServerEcho(1234);
         new Thread(server::launchServer).start();
         Scanner scanner = new Scanner(System.in);
         while(!scanner.nextLine().equals("quit"));

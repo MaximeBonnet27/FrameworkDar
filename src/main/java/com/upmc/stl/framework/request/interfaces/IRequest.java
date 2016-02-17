@@ -10,4 +10,5 @@ public interface IRequest {
 
     String getContent();
     void setContent(String content);
+
 }

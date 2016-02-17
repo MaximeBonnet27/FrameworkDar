@@ -29,17 +29,22 @@ public class ResponseHeader implements IResponseHeader {
         values.stream().forEach(v -> this.addItem(item, v));
     }
 
+    @Override
+    public Set<String> getValues(EResponseHeaderItem item) {
+        return map.get(item);
+    }
+
     // TODO: 16/02/16 Mettre au propre ?
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         map.entrySet().stream().
-                forEach(i ->
-                        sb.append(i.getKey())
-                                .append(": ")
-                                .append(i.getValue().stream().findFirst().get())
-                                .append("\r\n"));
+                forEach(i -> sb
+                        .append(i.getKey())
+                        .append(": ")
+                        .append(i.getValue().stream().findFirst().get())
+                        .append("\r\n"));
         return sb.toString();
     }
 }

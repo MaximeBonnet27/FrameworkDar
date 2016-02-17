@@ -65,8 +65,9 @@ public class Response implements IResponse {
 
     @Override
     public String toString() {
-        return protocol + " " + status + "\n"
-                + header + "\n"
+        return protocol + " " + status + "\r\n"
+                + header // Le dernier header contient déjà le retour à la ligne
+                + "\r\n" // Saut de ligne entre header et content
                 + content;
     }
 }

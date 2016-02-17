@@ -11,6 +11,11 @@
 
 
     <dependencies>
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
 
     </dependencies>
 
@@ -22,7 +27,7 @@
                     <finalName>frameworkDar</finalName>
                     <archive>
                         <manifest>
-                            <mainClass>com.upmc.stl.framework.process.Main</mainClass>
+                            <mainClass>com.upmc.stl.framework.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
