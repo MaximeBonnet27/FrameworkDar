@@ -1,6 +1,6 @@
 package com.upmc.stl.framework.process;
 
-import com.upmc.stl.framework.common.enums.EProtocol;
+import com.upmc.stl.framework.common.enums.ProtocolVersions;
 import com.upmc.stl.framework.process.interfaces.IProcess;
 import com.upmc.stl.framework.request.enums.ERequestHeaderItem;
 import com.upmc.stl.framework.request.interfaces.IMethod;
@@ -9,7 +9,9 @@ import com.upmc.stl.framework.response.enums.EResponseHeaderItem;
 import com.upmc.stl.framework.response.enums.EStatus;
 import com.upmc.stl.framework.response.implem.ResponseBuilder;
 import com.upmc.stl.framework.response.interfaces.IResponse;
+import org.codehaus.jackson.map.ObjectMapper;
 
+import java.io.IOException;
 import java.util.Set;
 
 import static com.upmc.stl.framework.request.enums.ERequestHeaderItem.*;
@@ -18,22 +20,19 @@ public class ProcessEcho implements IProcess {
 
     @Override
     public IResponse run(IRequest request) {
-        Set<String> acceptes = request.getHeader().getValues(ACCEPT);
+        Set<String> acceptes = request.getHeader().get(ACCEPT);
         String contentType = selectContentType(acceptes);
-        System.out.println(" ----> " + contentType);
         String message = buildContent(contentType, request);
-        IResponse response = new ResponseBuilder()
-                .protocol(EProtocol.HTTP_1_1)
+        return new ResponseBuilder()
+                .protocol(ProtocolVersions.HTTP_1_1)
                 .status(EStatus.OK)
                 .header(EResponseHeaderItem.CONTENT_TYPE, contentType)
                 .header(EResponseHeaderItem.CONTENT_LENGTH, message.length() + "")
                 .content(message)
                 .build();
-        return response;
     }
 
     public String selectContentType(Set<String> contentTypes){
-        // TODO: 17/02/16 string in list
         if(contentTypes.contains("text/html"))
             return  "text/html";
         if(contentTypes.contains("application/json"))
@@ -53,10 +52,13 @@ public class ProcessEcho implements IProcess {
         }
     }
 
-    // TODO: 17/02/16 Enlever commentaires
     private String buildContentJSON(IRequest request) {
-//        ObjectMapper mapper = new ObjectMapper();
-//        return mapper.writerWithDefaultPrettyPrinter().writeValueAsString(request);
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.writeValueAsString(request);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         return "";
     }
 
@@ -72,7 +74,7 @@ public class ProcessEcho implements IProcess {
         StringBuilder headerTable=new StringBuilder("<table border=\"1px\"><tr><th>Item</th><th>Value</th></tr>");
         String headerLine = "<tr><td>%s</td><td>%s</td></tr>";
         for(ERequestHeaderItem item:ERequestHeaderItem.values()){
-            headerTable.append(String.format(headerLine,item,request.getHeader().getValues(item)));
+            headerTable.append(String.format(headerLine,item,request.getHeader().get(item)));
         }
         headerTable.append("</table>");
 

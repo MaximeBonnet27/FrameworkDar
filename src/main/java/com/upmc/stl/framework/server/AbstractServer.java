@@ -1,6 +1,5 @@
 package com.upmc.stl.framework.server;
 
-import com.upmc.stl.framework.common.enums.EProtocol;
 import com.upmc.stl.framework.process.interfaces.IProcess;
 import com.upmc.stl.framework.request.enums.EMethodType;
 import com.upmc.stl.framework.request.enums.ERequestHeaderItem;
@@ -20,11 +19,9 @@ import java.util.Scanner;
 
 public class AbstractServer {
     private ServerSocket serverSocket;
-    private int port;
     private IProcess process;
 
     public AbstractServer(int port,IProcess process) {
-        this.port = port;
         this.process=process;
         try {
             serverSocket = new ServerSocket(port);
@@ -47,6 +44,7 @@ public class AbstractServer {
                 }
                 // TODO: 17/02/16 vérification avan parser
                 IRequest request = parse(sb.toString());
+                System.out.println(request);
                 IResponse response = process.run(request);
 
                 BufferedOutputStream bos = new BufferedOutputStream(connectionSocket.getOutputStream());
@@ -80,7 +78,7 @@ public class AbstractServer {
         IMethod method = request.getMethod();
         method.setMethodType(EMethodType.getMethod(firstLineTokens[0]));
         method.setURL(firstLineTokens[1]);
-        method.setProtocol(EProtocol.getProtocol(firstLineTokens[2]));
+        method.setProtocol(firstLineTokens[2]);
 
         while (scanner.hasNextLine()
                 && !(line=scanner.nextLine()).isEmpty()){
@@ -98,6 +96,7 @@ public class AbstractServer {
 
         StringBuilder stringBuilder = new StringBuilder();
 
+        //TODO lire avec Content-Length
         while (scanner.hasNextLine()) {
             line = scanner.nextLine();
 

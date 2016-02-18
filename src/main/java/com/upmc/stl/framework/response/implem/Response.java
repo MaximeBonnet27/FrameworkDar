@@ -1,35 +1,26 @@
 package com.upmc.stl.framework.response.implem;
 
-import com.upmc.stl.framework.common.enums.EProtocol;
 import com.upmc.stl.framework.response.enums.EStatus;
 import com.upmc.stl.framework.response.interfaces.IResponse;
-import com.upmc.stl.framework.response.interfaces.IResponseHeader;
 
 public class Response implements IResponse {
 
-    private EProtocol protocol;
+    private String protocol;
     private EStatus status;
-    private IResponseHeader header;
+    private ResponseHeader header;
     private String content;
 
     public Response() {
         header = new ResponseHeader();
     }
 
-    public Response(EProtocol protocol, EStatus status, IResponseHeader header, String content) {
-        this.protocol = protocol;
-        this.status = status;
-        this.header = header;
-        this.content = content;
-    }
-
     @Override
-    public EProtocol getProtocol() {
+    public String getProtocol() {
         return protocol;
     }
 
     @Override
-    public void setProtocol(EProtocol protocol) {
+    public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 
@@ -44,12 +35,12 @@ public class Response implements IResponse {
     }
 
     @Override
-    public IResponseHeader getHeader() {
+    public ResponseHeader getHeader() {
         return header;
     }
 
     @Override
-    public void setHeader(IResponseHeader header) {
+    public void setHeader(ResponseHeader header) {
         this.header = header;
     }
 

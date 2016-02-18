@@ -2,12 +2,11 @@ package com.upmc.stl.framework.request.implem;
 
 import com.upmc.stl.framework.request.interfaces.IMethod;
 import com.upmc.stl.framework.request.interfaces.IRequest;
-import com.upmc.stl.framework.request.interfaces.IRequestHeader;
 
 public class Request implements IRequest {
 
     private IMethod method;
-    private IRequestHeader header;
+    private RequestHeader header;
     private String content;
 
     public Request() {
@@ -26,12 +25,12 @@ public class Request implements IRequest {
     }
 
     @Override
-    public IRequestHeader getHeader() {
+    public RequestHeader getHeader() {
         return header;
     }
 
     @Override
-    public void setHeader(IRequestHeader header) {
+    public void setHeader(RequestHeader header) {
         this.header = header;
     }
 

@@ -1,17 +1,13 @@
 package com.upmc.stl.framework.request.implem;
 
-import com.upmc.stl.framework.common.enums.EProtocol;
 import com.upmc.stl.framework.request.enums.EMethodType;
 import com.upmc.stl.framework.request.interfaces.IMethod;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class Method implements IMethod {
 
     private EMethodType methodType;
     private String URL;
-    private EProtocol protocol;
+    private String protocol;
 
     public Method() {
     }
@@ -38,12 +34,12 @@ public class Method implements IMethod {
     }
 
     @Override
-    public EProtocol getProtocol() {
+    public String getProtocol() {
         return protocol;
     }
 
     @Override
-    public void setProtocol(EProtocol protocol) {
+    public void setProtocol(String protocol) {
         this.protocol = protocol;
     }
 

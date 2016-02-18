@@ -3,7 +3,8 @@ package com.upmc.stl.framework.request.enums;
 import java.util.Arrays;
 import java.util.Optional;
 
-// TODO: 16/02/16 Rajouter attributs pour le parsing ?
+// TODO: 16/02/16 Transformer Methode en String
+// TODO: 16/02/16 Remplacer UNKNOWN par exception ou il convient
 public enum EMethodType {
 
     GET,

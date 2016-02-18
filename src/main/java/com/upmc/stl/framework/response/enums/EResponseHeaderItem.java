@@ -1,5 +1,6 @@
 package com.upmc.stl.framework.response.enums;
 
+// TODO: 16/02/16 Transformer les Header item en String
 // TODO: 16/02/16 Remplir avec les headers à implémenter
 public enum EResponseHeaderItem {
     CONTENT_ENCODING("Content-Encoding"),

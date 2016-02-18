@@ -3,6 +3,7 @@ package com.upmc.stl.framework.request.enums;
 import java.util.Arrays;
 import java.util.Optional;
 
+// TODO: 16/02/16 Transformer HeaderItem en String
 // TODO: 16/02/16 Remplir avec les headers à implémenter
 public enum ERequestHeaderItem {
     ACCEPT("Accept"),

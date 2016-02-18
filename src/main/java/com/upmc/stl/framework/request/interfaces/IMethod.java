@@ -1,7 +1,6 @@
 package com.upmc.stl.framework.request.interfaces;
 
 import com.upmc.stl.framework.request.enums.EMethodType;
-import com.upmc.stl.framework.common.enums.EProtocol;
 
 public interface IMethod {
 
@@ -11,7 +10,7 @@ public interface IMethod {
     String getURL();
     void setURL(String urlName);
 
-    EProtocol getProtocol();
-    void setProtocol(EProtocol protocol);
+    String getProtocol();
+    void setProtocol(String protocol);
 
 }
