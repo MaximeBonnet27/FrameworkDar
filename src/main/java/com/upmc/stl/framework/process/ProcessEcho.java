@@ -1,50 +1,50 @@
 package com.upmc.stl.framework.process;
 
-import com.upmc.stl.framework.common.enums.ProtocolVersions;
+import com.upmc.stl.framework.common.enums.HttpProtocolVersions;
 import com.upmc.stl.framework.process.interfaces.IProcess;
-import com.upmc.stl.framework.request.enums.ERequestHeaderItem;
 import com.upmc.stl.framework.request.interfaces.IMethod;
-import com.upmc.stl.framework.request.interfaces.IRequest;
-import com.upmc.stl.framework.response.enums.EResponseHeaderItem;
+import com.upmc.stl.framework.request.interfaces.IHttpRequest;
 import com.upmc.stl.framework.response.enums.EStatus;
-import com.upmc.stl.framework.response.implem.ResponseBuilder;
-import com.upmc.stl.framework.response.interfaces.IResponse;
+import com.upmc.stl.framework.response.implem.HttpResponseBuilder;
+import com.upmc.stl.framework.response.interfaces.IHttpResponse;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import java.io.IOException;
 import java.util.Set;
 
-import static com.upmc.stl.framework.request.enums.ERequestHeaderItem.*;
+import static com.upmc.stl.framework.request.enums.HttpRequestHeaderFields.ACCEPT;
+import static com.upmc.stl.framework.response.enums.HttpResponseHeaderFields.*;
 
 public class ProcessEcho implements IProcess {
 
     @Override
-    public IResponse run(IRequest request) {
+    public IHttpResponse run(IHttpRequest request) {
         Set<String> acceptes = request.getHeader().get(ACCEPT);
         String contentType = selectContentType(acceptes);
         String message = buildContent(contentType, request);
-        return new ResponseBuilder()
-                .protocol(ProtocolVersions.HTTP_1_1)
+        return new HttpResponseBuilder()
+                .protocol(HttpProtocolVersions.HTTP_1_1)
                 .status(EStatus.OK)
-                .header(EResponseHeaderItem.CONTENT_TYPE, contentType)
-                .header(EResponseHeaderItem.CONTENT_LENGTH, message.length() + "")
+                .header(CONTENT_TYPE, contentType)
+                .header(CONTENT_LENGTH, message.length() + "")
                 .content(message)
                 .build();
     }
 
-    public String selectContentType(Set<String> contentTypes){
-        if(contentTypes.contains("text/html"))
-            return  "text/html";
-        if(contentTypes.contains("application/json"))
+    public String selectContentType(Set<String> contentTypes) {
+        if (contentTypes.contains("text/html"))
+            return "text/html";
+        if (contentTypes.contains("application/json"))
             return "application/json";
         return "text/plain";
     }
-    public String buildContent(String contentType,IRequest request){
-        switch (contentType){
+
+    public String buildContent(String contentType, IHttpRequest request) {
+        switch (contentType) {
             case "text/plain":
                 return buildContentPlain(request);
             case "text/html":
-                return  buildContentHTML(request);
+                return buildContentHTML(request);
             case "application/json":
                 return buildContentJSON(request);
             default:
@@ -52,7 +52,7 @@ public class ProcessEcho implements IProcess {
         }
     }
 
-    private String buildContentJSON(IRequest request) {
+    private String buildContentJSON(IHttpRequest request) {
         ObjectMapper mapper = new ObjectMapper();
         try {
             return mapper.writeValueAsString(request);
@@ -62,8 +62,8 @@ public class ProcessEcho implements IProcess {
         return "";
     }
 
-    private String buildContentHTML(IRequest request) {
-        String html = "<html><head><title>Serveur Echo</title></head><body>%s</body/></html>";
+    private String buildContentHTML(IHttpRequest request) {
+        String html = "<html><head><title>Serveur Echo</title></head><body>%s</body></html>";
 
         IMethod method = request.getMethod();
         String firstLine = String.format("<p>Methode : %s</p><p>Resource : %s</p><p>Protocole : %s</p>",
@@ -71,18 +71,20 @@ public class ProcessEcho implements IProcess {
                 method.getURL(),
                 method.getProtocol());
 
-        StringBuilder headerTable=new StringBuilder("<table border=\"1px\"><tr><th>Item</th><th>Value</th></tr>");
+        StringBuilder headerTable = new StringBuilder("<table border=\"1px\"><tr><th>Item</th><th>Value</th></tr>");
         String headerLine = "<tr><td>%s</td><td>%s</td></tr>";
-        for(ERequestHeaderItem item:ERequestHeaderItem.values()){
-            headerTable.append(String.format(headerLine,item,request.getHeader().get(item)));
-        }
+
+        request.getHeader()
+                .entrySet()
+                .stream()
+                .forEach(entry -> String.format(headerLine, entry.getKey(), entry.getValue()));
         headerTable.append("</table>");
 
         String content = "<p>Content :" + request.getContent() + "</p>";
-        return String.format(html,firstLine+headerTable.toString()+content);
+        return String.format(html, firstLine + headerTable.toString() + content);
     }
 
-    private String buildContentPlain(IRequest request) {
+    private String buildContentPlain(IHttpRequest request) {
         return request.toString();
     }
 }

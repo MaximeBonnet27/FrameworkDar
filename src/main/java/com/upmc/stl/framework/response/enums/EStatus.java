@@ -5,7 +5,6 @@ import com.upmc.stl.framework.response.exceptions.StatusException;
 import java.util.Arrays;
 import java.util.Optional;
 
-// TODO: 16/02/16 A remplir avec les codes
 @SuppressWarnings("unused")
 public enum EStatus {
     /* INFORMATION */

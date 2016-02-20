@@ -2,9 +2,10 @@ package com.upmc.stl.framework.response.interfaces;
 
 
 import com.upmc.stl.framework.response.enums.EStatus;
-import com.upmc.stl.framework.response.implem.ResponseHeader;
+import com.upmc.stl.framework.response.implem.HttpResponseHeader;
 
-public interface IResponse {
+@SuppressWarnings("unused")
+public interface IHttpResponse {
 
     String getProtocol();
     void setProtocol(String protocol);
@@ -12,8 +13,8 @@ public interface IResponse {
     EStatus getStatus();
     void setStatus(EStatus status);
 
-    ResponseHeader getHeader();
-    void setHeader(ResponseHeader header);
+    HttpResponseHeader getHeader();
+    void setHeader(HttpResponseHeader header);
 
     String getContent();
     void setContent(String content);

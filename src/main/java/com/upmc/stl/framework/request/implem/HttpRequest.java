@@ -1,17 +1,18 @@
 package com.upmc.stl.framework.request.implem;
 
 import com.upmc.stl.framework.request.interfaces.IMethod;
-import com.upmc.stl.framework.request.interfaces.IRequest;
+import com.upmc.stl.framework.request.interfaces.IHttpRequest;
 
-public class Request implements IRequest {
+public class HttpRequest implements IHttpRequest {
 
     private IMethod method;
-    private RequestHeader header;
+    private HttpRequestHeader header;
     private String content;
 
-    public Request() {
-        header = new RequestHeader();
+    public HttpRequest() {
+        header = new HttpRequestHeader();
         method = new Method();
+        content="";
     }
 
     @Override
@@ -25,12 +26,12 @@ public class Request implements IRequest {
     }
 
     @Override
-    public RequestHeader getHeader() {
+    public HttpRequestHeader getHeader() {
         return header;
     }
 
     @Override
-    public void setHeader(RequestHeader header) {
+    public void setHeader(HttpRequestHeader header) {
         this.header = header;
     }
 

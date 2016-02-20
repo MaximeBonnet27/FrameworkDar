@@ -1,10 +1,10 @@
 package com.upmc.stl.framework.request.enums;
 
+import com.upmc.stl.framework.request.exceptions.MethodeTypeException;
+
 import java.util.Arrays;
 import java.util.Optional;
 
-// TODO: 16/02/16 Transformer Methode en String
-// TODO: 16/02/16 Remplacer UNKNOWN par exception ou il convient
 public enum EMethodType {
 
     GET,
@@ -15,14 +15,15 @@ public enum EMethodType {
     TRACE,
     OPTIONS,
     CONNECT,
-    PATCH,
-    UNKNWON;
+    PATCH;
 
-    public static EMethodType getMethod(String name) {
+    public static EMethodType getMethod(String name) throws MethodeTypeException {
         Optional<EMethodType> itemOptional = Arrays.asList(EMethodType.values()).stream()
                 .filter(e -> e.toString().equals(name))
                 .findFirst();
-        return itemOptional.isPresent() ? itemOptional.get() : UNKNWON;
+        if(!itemOptional.isPresent())
+            throw new MethodeTypeException("Unknown methode http "+name);
+        return itemOptional.get();
     }
 }
 
