@@ -1,0 +1,25 @@
+<xs:schema targetNamespace="http://www.wasp.com/schemas/wasp"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified"
+           xmlns="http://www.wasp.com/schemas/wasp"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="wasp" type="waspType"/>
+
+  <xs:complexType name="waspType">
+    <xs:sequence>
+      <xs:element type="request-mappingType" name="request-mapping" minOccurs="0" maxOccurs="unbounded"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="request-mappingType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="resource" use="required"/>
+        <xs:attribute type="xs:string" name="method" use="required"/>
+        <xs:attribute type="xs:string" name="controller" use="required"/>
+        <xs:attribute type="xs:string" name="callback" use="required"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+</xs:schema>

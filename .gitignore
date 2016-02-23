@@ -2,4 +2,6 @@
 *.iml
 *.iws
 log/
+/src/main/java/com/wasp/schemas
+/src/main/java/META-INF
 target/

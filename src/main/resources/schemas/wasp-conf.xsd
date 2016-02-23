@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema targetNamespace="http://www.wasp.com/schemas/wasp-conf"
+           attributeFormDefault="unqualified"
+           elementFormDefault="qualified"
+           xmlns="http://www.wasp.com/schemas/wasp-conf"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+    <xs:element name="wasp-config" type="wasp-configType"/>
+
+    <xs:complexType name="applicationType">
+        <xs:sequence>
+            <xs:element name="description" type="xs:string"/>
+        </xs:sequence>
+        <xs:attribute type="xs:anyURI" name="context" use="required"/>
+        <xs:attribute type="xs:anyURI" name="location" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="wasp-configType">
+        <xs:sequence>
+            <xs:element type="waspsType" name="wasps"/>
+        </xs:sequence>
+        <xs:attribute type="xs:int" name="port" use="required"/>
+    </xs:complexType>
+
+    <xs:complexType name="waspsType">
+        <xs:sequence>
+            <xs:element type="applicationType" name="application" maxOccurs="unbounded" minOccurs="0"/>
+        </xs:sequence>
+    </xs:complexType>
+</xs:schema>

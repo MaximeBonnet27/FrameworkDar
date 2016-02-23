@@ -1,0 +1,9 @@
+<wasp-config xmlns="http://www.wasp.com/schemas/wasp-conf"
+             port="1234">
+    <wasps>
+        <application context="/points"
+                     location="/Users/jordhanleoture/Documents/workspaceIntelli/PointProject/target/PointProject-1.0-SNAPSHOT.jar">
+            <description>gestionnaire de points</description>
+        </application>
+    </wasps>
+</wasp-config>
