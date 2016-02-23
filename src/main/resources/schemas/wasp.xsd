@@ -8,18 +8,21 @@
 
   <xs:complexType name="waspType">
     <xs:sequence>
-      <xs:element type="request-mappingType" name="request-mapping" minOccurs="0" maxOccurs="unbounded"/>
+      <xs:element type="controller-Type" name="controller" minOccurs="0" maxOccurs="unbounded"/>
     </xs:sequence>
   </xs:complexType>
 
-  <xs:complexType name="request-mappingType">
-    <xs:simpleContent>
-      <xs:extension base="xs:string">
+    <xs:complexType name="request-mappingType">
         <xs:attribute type="xs:string" name="resource" use="required"/>
         <xs:attribute type="xs:string" name="method" use="required"/>
-        <xs:attribute type="xs:string" name="controller" use="required"/>
         <xs:attribute type="xs:string" name="callback" use="required"/>
-      </xs:extension>
-    </xs:simpleContent>
   </xs:complexType>
+
+    <xs:complexType name="controller-Type">
+        <xs:sequence>
+            <xs:element type="request-mappingType" name="request-mapping" minOccurs="0" maxOccurs="unbounded"/>
+        </xs:sequence>
+        <xs:attribute type="xs:ID" name="class" use="required"/>
+    </xs:complexType>
+
 </xs:schema>

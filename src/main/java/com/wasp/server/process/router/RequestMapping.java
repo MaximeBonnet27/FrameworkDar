@@ -1,73 +1,86 @@
 package com.wasp.server.process.router;
 
-import com.wasp.AppUtils;
 import com.wasp.schemas.wasp.RequestMappingType;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
-import com.wasp.util.httpComponent.response.implem.HttpResponseBuilder;
-import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
-import org.xeustechnologies.jcl.JarClassLoader;
-import org.xeustechnologies.jcl.JclObjectFactory;
+import org.apache.log4j.Logger;
+import org.jvnet.jaxb2_commons.lang.ToStringStrategy2;
+import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.List;
-import java.util.Set;
 
-import static com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields.ACCEPT;
-import static com.wasp.util.httpComponent.response.enums.HttpResponseHeaderFields.CONTENT_TYPE;
+public class RequestMapping extends RequestMappingType{
+    private static Logger logger=Logger.getLogger(RequestMapping.class);
+    private final RequestMappingType delegate;
+    private final Object controller;
+    private Method method;
 
-public class RequestMapping{
-
-    public static IHttpResponse callback(JarClassLoader jcl,RequestMappingType requestMapping, IHttpRequest request){
-        Object o = JclObjectFactory.getInstance().create(jcl, requestMapping.getController());
+    public RequestMapping(RequestMappingType delegate, Object controller) {
+        this.delegate=delegate;
+        this.controller=controller;
         try {
-            Method[] declaredMethods = o.getClass().getDeclaredMethods();
-            for(Method m:declaredMethods)
-                System.out.println(m.getName());
-            Method callback = o.getClass().getDeclaredMethod(requestMapping.getCallback());
-            Object result = callback.invoke(o);
-            if(result.getClass().isAssignableFrom(IHttpResponse.class))
-                return (IHttpResponse)result;
-            return convertToHttpResponse(result,request.getHeader().get(ACCEPT));
-        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            e.printStackTrace();
+            this.method=this.controller.getClass().getDeclaredMethod(getCallback());
+            logger.info(this);
+        } catch (NoSuchMethodException e) {
+            logger.error(e.getMessage());
         }
-        return null;
+
     }
 
-    public static boolean isMapping(RequestMappingType requestMapping, IHttpRequest request) {
+    //TODO ajouter les arguments
+    public Object callback() throws InvocationTargetException, IllegalAccessException {
+        return this.method.invoke(controller);
+    }
+
+    public boolean isMapping(IHttpRequest request) {
         //TODO to complete
-        return requestMapping.getResource().equals(request.getMethod().getUrl().getResource().replaceFirst("^/[^/]+", "")) &&
-                requestMapping.getMethod().equals(request.getMethod().getMethodType().toString());
+        return getResource().equals(request.getMethod().getUrl().getResource().replaceFirst("^/[^/]+", "")) &&
+                getMethod().equals(request.getMethod().getMethodType().toString());
     }
 
-    public static RequestMappingType findRequestMappindType(List<RequestMappingType> requestMappingTypes, IHttpRequest request) {
-        for(RequestMappingType requestMappingType : requestMappingTypes){
-            if(isMapping(requestMappingType,request))
-                return requestMappingType;
-        }
-        return null;
+    @Override
+    public String getResource() {
+        return delegate.getResource();
     }
 
-    private static IHttpResponse convertToHttpResponse(Object result, Set<String> strings) {
-        HttpResponseBuilder builder = new HttpResponseBuilder();
+    @Override
+    public void setResource(String value) {
+        delegate.setResource(value);
+    }
 
-        if(strings.contains("text/plain")){
-            builder.header(CONTENT_TYPE,"text/plain");
-            builder.ok(result.toString());
+    @Override
+    public String getMethod() {
+        return delegate.getMethod();
+    }
 
-        }else if(strings.contains("application/json")){
-            builder.header(CONTENT_TYPE, "application/json");
-            builder.ok(new AppUtils().toJSON(result));
+    @Override
+    public void setMethod(String value) {
+        delegate.setMethod(value);
+    }
 
-        }else if(strings.contains("application/xml")){
-            builder.header(CONTENT_TYPE,"application/xml");
-            builder.ok("");
-            //TODO
-        }else {
-            builder.noContent();
-        }
-        return builder.build();
+    @Override
+    public String getCallback() {
+        return delegate.getCallback();
+    }
+
+    @Override
+    public void setCallback(String value) {
+        delegate.setCallback(value);
+    }
+
+    @Override
+    public String toString() {
+        return delegate.toString();
+    }
+
+    @Override
+    public StringBuilder append(ObjectLocator locator, StringBuilder buffer, ToStringStrategy2 strategy) {
+        return delegate.append(locator, buffer, strategy);
+    }
+
+    @Override
+    public StringBuilder appendFields(ObjectLocator locator, StringBuilder buffer, ToStringStrategy2 strategy) {
+        return delegate.appendFields(locator, buffer, strategy);
     }
 
 

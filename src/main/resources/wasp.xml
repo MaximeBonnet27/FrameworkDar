@@ -1,6 +1,7 @@
 <wasp xmlns="http://www.wasp.com/schemas/wasp">
-    <request-mapping resource="/list"
-                     method="GET"
-                     controller="stl.upmc.com.controller.PointController"
-                     callback="list"/>
+    <controller class="stl.upmc.com.controller.PointController">
+        <request-mapping resource="/list"
+                         method="GET"
+                         callback="list"/>
+    </controller>
 </wasp>
