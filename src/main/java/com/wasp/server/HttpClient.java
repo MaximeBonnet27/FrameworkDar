@@ -11,6 +11,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 
 public class HttpClient {
     private static final Logger logger= Logger.getLogger(HttpClient.class);
@@ -25,7 +27,7 @@ public class HttpClient {
 
     public IHttpRequest getHttpRequest() throws IOException, MethodeTypeException {
         if(request==null)
-            this.request=HttpRequestParser.parser(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+            this.request=HttpRequestParser.parse(new BufferedReader(new InputStreamReader(socket.getInputStream())));
         return request;
     }
 
@@ -36,6 +38,7 @@ public class HttpClient {
             if(response.getContent()!=null)
                 content_length=response.getContent().length();
             response.getHeader().addItem(HttpResponseHeaderFields.CONTENT_LENGTH, String.valueOf(content_length));
+            response.getHeader().addItem(HttpResponseHeaderFields.DATE, getHttpDate());
 
             //todo ajouter dans entete genre date etc
         }
@@ -47,6 +50,12 @@ public class HttpClient {
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
+    }
+
+    public String getHttpDate(){
+        return java.time.format.DateTimeFormatter
+                .RFC_1123_DATE_TIME
+                .format(ZonedDateTime.now(ZoneId.of("GMT")));
     }
 
     public void shutdown(){

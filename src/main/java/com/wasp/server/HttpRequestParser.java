@@ -17,7 +17,7 @@ import java.util.Set;
 public abstract class HttpRequestParser {
 
     //TODO 19/02/16 ajouter exception parser et verifier taille des tableaux
-    public static IHttpRequest parser(BufferedReader br) throws IOException, MethodeTypeException {
+    public static IHttpRequest parse(BufferedReader br) throws IOException, MethodeTypeException {
         IHttpRequest request = new HttpRequest();
 
         //Parse first line protocol
@@ -49,5 +49,7 @@ public abstract class HttpRequestParser {
         }
         return request;
     }
+
+
 
 }

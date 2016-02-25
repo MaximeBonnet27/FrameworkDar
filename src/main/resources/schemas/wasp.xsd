@@ -1,28 +1,76 @@
-<xs:schema targetNamespace="http://www.wasp.com/schemas/wasp"
-           attributeFormDefault="unqualified"
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema attributeFormDefault="unqualified"
            elementFormDefault="qualified"
-           xmlns="http://www.wasp.com/schemas/wasp"
-           xmlns:xs="http://www.w3.org/2001/XMLSchema">
+           targetNamespace="http://www.wasp.com/schemas/wasp"
+           xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns = "http://www.wasp.com/schemas/wasp">
 
-  <xs:element name="wasp" type="waspType"/>
+    <xs:element name="wasp" type="waspType"  />
 
-  <xs:complexType name="waspType">
-    <xs:sequence>
-      <xs:element type="controller-Type" name="controller" minOccurs="0" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
+    <xs:complexType name="waspType">
+        <xs:sequence>
+            <xs:element type="controllerType" name="controller"  maxOccurs="unbounded" minOccurs="0"  />
+        </xs:sequence>
+    </xs:complexType>
 
-    <xs:complexType name="request-mappingType">
+    <xs:complexType name="controllerType">
+        <xs:sequence>
+            <xs:element type="request-mappingType" name="request-mapping" maxOccurs="unbounded" minOccurs="0"  />
+        </xs:sequence>
+        <xs:attribute type="xs:string" name="class"/>
+    </xs:complexType>
+
+    <xs:complexType name="request-mappingType" mixed="true">
+        <xs:sequence>
+            <xs:element type="formatsType" name="content-type" minOccurs="0" maxOccurs="1"/>
+            <xs:element type="formatsType" name="produce-type" minOccurs="0" maxOccurs="1"/>
+            <xs:element type="argumentsType" name="arguments" minOccurs="0"  />
+        </xs:sequence>
         <xs:attribute type="xs:string" name="resource" use="required"/>
         <xs:attribute type="xs:string" name="method" use="required"/>
         <xs:attribute type="xs:string" name="callback" use="required"/>
-  </xs:complexType>
 
-    <xs:complexType name="controller-Type">
-        <xs:sequence>
-            <xs:element type="request-mappingType" name="request-mapping" minOccurs="0" maxOccurs="unbounded"/>
-        </xs:sequence>
-        <xs:attribute type="xs:ID" name="class" use="required"/>
     </xs:complexType>
+
+    <xs:complexType name="formatsType">
+        <xs:sequence>
+            <xs:element type="formatType" name="format" minOccurs="1" maxOccurs="unbounded" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="formatType">
+        <xs:attribute name="value" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="application/json" />
+                    <xs:enumeration value="application/xml" />
+                    <xs:enumeration value="text/plain" />
+                    <xs:enumeration value="text/html" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+    </xs:complexType>
+
+    <xs:complexType name="argumentsType">
+        <xs:sequence>
+            <xs:element type="argumentType" name="argument" maxOccurs="unbounded" minOccurs="0"  />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="argumentType">
+        <xs:attribute name="source-type" use="required">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="path-variable" />
+                    <xs:enumeration value="request-variable" />
+                    <xs:enumeration value="request-body" />
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
+        <xs:attribute type="xs:string" name="source-ref" use="optional"/>
+        <xs:attribute type="xs:string" name="type" use="required"/>
+    </xs:complexType>
+
+
 
 </xs:schema>

@@ -1,6 +1,7 @@
 package com.wasp.server.process;
 
 import com.wasp.server.process.interfaces.IProcess;
+import com.wasp.util.httpComponent.common.enums.HttpContentTypes;
 import com.wasp.util.httpComponent.common.enums.HttpProtocolVersions;
 import com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
@@ -33,20 +34,20 @@ public class ProcessEcho implements IProcess {
     }
 
     public String selectContentType(Set<String> contentTypes) {
-        if (contentTypes.contains("text/html"))
-            return "text/html";
-        if (contentTypes.contains("application/json"))
-            return "application/json";
-        return "text/plain";
+        if (contentTypes.contains(HttpContentTypes.HTML))
+            return HttpContentTypes.HTML;
+        if (contentTypes.contains(HttpContentTypes.JSON))
+            return HttpContentTypes.JSON;
+        return HttpContentTypes.TEXT;
     }
 
     public String buildContent(String contentType, IHttpRequest request) {
         switch (contentType) {
-            case "text/plain":
+            case HttpContentTypes.TEXT:
                 return buildContentPlain(request);
-            case "text/html":
+            case HttpContentTypes.HTML:
                 return buildContentHTML(request);
-            case "application/json":
+            case HttpContentTypes.JSON:
                 return buildContentJSON(request);
             default:
                 return "";

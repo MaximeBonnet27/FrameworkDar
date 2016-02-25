@@ -14,16 +14,16 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 
-public class GeneriqueHttpServer extends ServerSocket {
-    private static final Logger logger = Logger.getLogger(GeneriqueHttpServer.class);
+public class GenericHttpServer extends ServerSocket {
+    private static final Logger logger = Logger.getLogger(GenericHttpServer.class);
     private IProcess process;
     private boolean askClose;
 
-    private GeneriqueHttpServer(int port) throws IOException {
+    private GenericHttpServer(int port) throws IOException {
         super(port);
     }
 
-    public GeneriqueHttpServer(int port, IProcess process) throws IOException {
+    public GenericHttpServer(int port, IProcess process) throws IOException {
         this(port);
         this.process = process;
         this.askClose = false;

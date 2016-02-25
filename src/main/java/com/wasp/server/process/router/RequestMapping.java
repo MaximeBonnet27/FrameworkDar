@@ -19,6 +19,7 @@ public class RequestMapping extends RequestMappingType{
         this.delegate=delegate;
         this.controller=controller;
         try {
+            // TODO: 25/02/16 A CHANGER en lisant les args dans le xml
             this.method=this.controller.getClass().getDeclaredMethod(getCallback());
             logger.info(this);
         } catch (NoSuchMethodException e) {
@@ -27,13 +28,15 @@ public class RequestMapping extends RequestMappingType{
 
     }
 
-    //TODO ajouter les arguments
-    public Object callback() throws InvocationTargetException, IllegalAccessException {
-        return this.method.invoke(controller);
+    public Object callback(Object[] args) throws InvocationTargetException, IllegalAccessException {
+
+        return this.method.invoke(controller, args);
     }
 
     public boolean isMapping(IHttpRequest request) {
         //TODO to complete
+        logger.info("Request : " + request.getMethod().getUrl().getResource().replaceFirst("^/[^/]+", ""));
+        logger.info("Method : " + request.getMethod().getMethodType().toString());
         return getResource().equals(request.getMethod().getUrl().getResource().replaceFirst("^/[^/]+", "")) &&
                 getMethod().equals(request.getMethod().getMethodType().toString());
     }

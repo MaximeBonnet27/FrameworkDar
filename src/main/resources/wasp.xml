@@ -1,7 +1,65 @@
 <wasp xmlns="http://www.wasp.com/schemas/wasp">
-    <controller class="stl.upmc.com.controller.PointController">
+    <controller class="com.upmc.stl.controller.PointController">
         <request-mapping resource="/list"
                          method="GET"
                          callback="list"/>
+
+        <request-mapping resource="/p/{id}/x" method="GET" callback="getX">
+            <arguments>
+                <argument source-type="path-variable"
+                          source-ref="id"
+                          type="int"/>
+            </arguments>
+        </request-mapping>
+
+        <request-mapping resource="/p/{id}/Y" method="GET" callback="getY">
+            <arguments>
+                <argument source-type="path-variable"
+                          source-ref="id"
+                          type="int"/>
+            </arguments>
+        </request-mapping>
+
+        <request-mapping resource="/p/{id}" method="PUT" callback="update">
+            <arguments>
+                <argument source-type="path-variable"
+                          source-ref="id"
+                          type="int"/>
+                <argument source-type="request-variable"
+                          source-ref="x"
+                          type="Integer"/>
+                <argument source-type="request-variable"
+                          source-ref="y"
+                          type="Integer"/>
+            </arguments>
+        </request-mapping>
+
+        <request-mapping resource="/p" method="POST" callback="addPointXml">
+            <content-type>
+                <format value="application/xml"/>
+            </content-type>
+            <produce-type>
+                <format value="application/xml"/>
+            </produce-type>
+            <arguments>
+                <argument source-type="request-body"
+                          type="stl.upmc.com.model.Point"/>
+            </arguments>
+        </request-mapping>
+
+        <request-mapping resource="/p" method="POST" callback="addPointJson">
+            <content-type>
+                <format value="application/json"/>
+            </content-type>
+            <produce-type>
+                <format value="application/json"/>
+            </produce-type>
+
+            <arguments>
+                <argument source-type="request-body"
+                          type="stl.upmc.com.Point"/>
+            </arguments>
+        </request-mapping>
+
     </controller>
 </wasp>

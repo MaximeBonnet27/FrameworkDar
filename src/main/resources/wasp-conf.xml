@@ -2,7 +2,7 @@
              port="1234">
     <wasps>
         <application context="/points"
-                     location="/Users/jordhanleoture/Documents/workspaceIntelli/PointProject/target/PointProject-1.0-SNAPSHOT.jar">
+                     location="/home/maxime/Dev/Master/DAR/points/out/artifacts/points_jar/points.jar">
             <description>gestionnaire de points</description>
         </application>
     </wasps>
