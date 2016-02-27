@@ -10,23 +10,26 @@ import org.xeustechnologies.jcl.JclObjectFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Controller extends ControllerType {
 
     private final ControllerType delegate;
     private final List<RequestMapping> requestMappings;
 
-    public Controller(ControllerType delegate, JarClassLoader jcl) {
+    public Controller(ControllerType delegate, ApplicationJarLoader jarLoader) {
         this.delegate=delegate;
-        Object controller = JclObjectFactory.getInstance().create(jcl, getClazz());
+        Object controller = jarLoader.newInstance(getClazz());
         this.requestMappings=new ArrayList<>();
-        for(RequestMappingType requestMappingType:delegate.getRequestMapping()){
-            this.requestMappings.add(new RequestMapping(requestMappingType, controller));
-        }
+        this.requestMappings.addAll(delegate
+                .getRequestMapping()
+                .stream()
+                .map(requestMappingType ->
+                        new RequestMapping(requestMappingType, controller,jarLoader))
+                .collect(Collectors.toList()));
     }
 
     public RequestMapping findRequestMapping(IHttpRequest request) {
-        //TODO to complete
         for(RequestMapping requestMapping:requestMappings){
             if (requestMapping.isMapping(request))
                 return requestMapping;

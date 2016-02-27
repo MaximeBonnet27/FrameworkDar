@@ -18,6 +18,7 @@ public class Router implements IProcess {
 
     private HashMap<String, Application> applications;
 
+    //TODO change WaspConfigType to WaspConfig
     public Router(WaspConfigType configuration) {
         this.applications = new HashMap<>();
         for(ApplicationType app:configuration.getWasps().getApplication()) {
@@ -30,9 +31,7 @@ public class Router implements IProcess {
 
     @Override
     public IHttpResponse run(IHttpRequest request) {
-        String[] split = request.getMethod().getUrl().getResource().split("/");
-        String context = split.length > 1 ? "/" + split[1] : "/";
-
+        String context=request.getMethod().getUrl().getContext();
         Application app= applications.get(context);
         if (app != null) {
             try {

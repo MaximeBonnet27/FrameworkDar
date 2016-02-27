@@ -71,11 +71,11 @@ public class GenericHttpServer extends ServerSocket {
             request = httpClient.getHttpRequest();
             logger.info("receive :\n" + request);
             response = process.run(request);
-        } catch (IOException | MethodeTypeException e1) { // BAD REQUEST
-            logger.error(e1.getMessage());
+        } catch (IOException | MethodeTypeException e) { // BAD REQUEST
+            logger.error(e.getMessage());
             response = new HttpResponseBuilder().protocol(HttpProtocolVersions.HTTP_1_1)
                     .status(EStatus.BAD_REQUEST)
-                    .content(e1.getMessage())
+                    .content(e.getMessage())
                     .build();
         }
 

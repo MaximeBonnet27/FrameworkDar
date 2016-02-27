@@ -1,36 +1,35 @@
 <wasp xmlns="http://www.wasp.com/schemas/wasp">
-    <controller class="com.upmc.stl.controller.PointController">
-        <request-mapping resource="/list"
-                         method="GET"
-                         callback="list"/>
+    <controller class="stl.upmc.com.controller.PointController">
 
-        <request-mapping resource="/p/{id}/x" method="GET" callback="getX">
+        <request-mapping resource="/p/list" method="GET" callback="list"/>
+
+        <request-mapping resource="/p/(id)/x" method="GET" callback="getX">
             <arguments>
                 <argument source-type="path-variable"
                           source-ref="id"
-                          type="int"/>
+                          type="java.lang.Integer"/>
             </arguments>
         </request-mapping>
 
-        <request-mapping resource="/p/{id}/Y" method="GET" callback="getY">
+        <request-mapping resource="/p/(id)/y" method="GET" callback="getY">
             <arguments>
                 <argument source-type="path-variable"
                           source-ref="id"
-                          type="int"/>
+                          type="java.lang.Integer"/>
             </arguments>
         </request-mapping>
 
-        <request-mapping resource="/p/{id}" method="PUT" callback="update">
+        <request-mapping resource="/p/(id)" method="PUT" callback="update">
             <arguments>
                 <argument source-type="path-variable"
                           source-ref="id"
-                          type="int"/>
+                          type="java.lang.Integer"/>
                 <argument source-type="request-variable"
                           source-ref="x"
-                          type="Integer"/>
+                          type="java.lang.Integer"/>
                 <argument source-type="request-variable"
                           source-ref="y"
-                          type="Integer"/>
+                          type="java.lang.Integer"/>
             </arguments>
         </request-mapping>
 
@@ -57,7 +56,7 @@
 
             <arguments>
                 <argument source-type="request-body"
-                          type="stl.upmc.com.Point"/>
+                          type="stl.upmc.com.model.Point"/>
             </arguments>
         </request-mapping>
 

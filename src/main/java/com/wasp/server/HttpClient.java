@@ -40,7 +40,7 @@ public class HttpClient {
             response.getHeader().addItem(HttpResponseHeaderFields.CONTENT_LENGTH, String.valueOf(content_length));
             response.getHeader().addItem(HttpResponseHeaderFields.DATE, getHttpDate());
 
-            //todo ajouter dans entete genre date etc
+            //todo ajouter dans entete
         }
         try {
             BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
@@ -52,7 +52,7 @@ public class HttpClient {
         }
     }
 
-    public String getHttpDate(){
+    private String getHttpDate(){
         return java.time.format.DateTimeFormatter
                 .RFC_1123_DATE_TIME
                 .format(ZonedDateTime.now(ZoneId.of("GMT")));

@@ -4,19 +4,26 @@ import com.wasp.util.httpComponent.request.interfaces.IUrl;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Url implements IUrl {
+    private String context;
     private String resource;
     private HashMap<String, String> arguments;
 
     public Url(String url) {
         //TODO throw exception si pas conforme
-        String[] split = url.split("\\?");
-        this.resource = split[0];
-        this.arguments= new HashMap<>();
-        if(split.length>1) {
-            String[] args = split[1].split("&");
-            initArguments(args);
+        Pattern pattern = Pattern.compile("^(/[^/]+)((/[^/?]+)*)(\\?(.*))?");
+        Matcher matcher = pattern.matcher(url);
+        if(matcher.matches()) {
+            this.context= matcher.group(1);
+            this.resource=matcher.group(2);
+            this.arguments = new HashMap<>();
+            String args = matcher.group(5);
+            if(args!=null){
+                initArguments(args.split("&"));
+            }
         }
     }
 
@@ -28,6 +35,11 @@ public class Url implements IUrl {
     }
 
     @Override
+    public String getContext() {
+        return context;
+    }
+
+    @Override
     public String getResource() {
         return this.resource;
     }
@@ -35,6 +47,11 @@ public class Url implements IUrl {
     @Override
     public Integer getIntegerValue(String key) {
         return Integer.parseInt(getValue(key));
+    }
+
+    @Override
+    public Float getFloatValue(String key) {
+        return Float.parseFloat(getValue(key));
     }
 
     @Override
@@ -49,7 +66,7 @@ public class Url implements IUrl {
 
     @Override
     public String toString() {
-        StringBuilder result = new StringBuilder(resource);
+        StringBuilder result = new StringBuilder(context+resource);
         if(!arguments.isEmpty()) {
             result.append("?");
             arguments.entrySet().forEach(entry -> result

@@ -20,14 +20,14 @@
         <xs:attribute type="xs:string" name="class"/>
     </xs:complexType>
 
-    <xs:complexType name="request-mappingType" mixed="true">
+    <xs:complexType name="request-mappingType">
         <xs:sequence>
             <xs:element type="formatsType" name="content-type" minOccurs="0" maxOccurs="1"/>
             <xs:element type="formatsType" name="produce-type" minOccurs="0" maxOccurs="1"/>
-            <xs:element type="argumentsType" name="arguments" minOccurs="0"  />
+            <xs:element type="argumentsType" name="arguments" minOccurs="0" maxOccurs="1"  />
         </xs:sequence>
         <xs:attribute type="xs:string" name="resource" use="required"/>
-        <xs:attribute type="xs:string" name="method" use="required"/>
+        <xs:attribute type="xs:string" name="method" use="optional" default=".*"/>
         <xs:attribute type="xs:string" name="callback" use="required"/>
 
     </xs:complexType>

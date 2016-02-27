@@ -45,4 +45,10 @@ public class AppUtils {
         return ressult;
     }
 
+    public <T> T fromJSON(String json,Class<T> clazz) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(json.getBytes(),clazz);
+    }
+
+    //TODO XML to T, Class<T> doit est conforme pour jaxb
 }

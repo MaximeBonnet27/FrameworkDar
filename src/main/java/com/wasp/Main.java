@@ -1,5 +1,6 @@
 package com.wasp;
 
+import com.wasp.schemas.JXBStringUtil;
 import com.wasp.schemas.wasp_conf.WaspConfigType;
 import com.wasp.server.GenericHttpServer;
 import com.wasp.server.process.router.Router;
@@ -23,7 +24,7 @@ public class Main {
 
         try {
             WaspConfigType configuration=new AppUtils().loadXML(new FileInputStream(args[0]), WaspConfigType.class);
-            logger.info(configuration);
+            logger.info(JXBStringUtil.pretty(configuration));
             GenericHttpServer httpServer = new GenericHttpServer(configuration.getPort(),new Router(configuration));
             new Thread(httpServer::launchServer).start();
 
