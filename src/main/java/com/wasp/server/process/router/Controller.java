@@ -21,8 +21,7 @@ public class Controller extends ControllerType {
         this.delegate=delegate;
         Object controller = jarLoader.newInstance(getClazz());
         this.requestMappings=new ArrayList<>();
-        this.requestMappings.addAll(delegate
-                .getRequestMapping()
+        this.requestMappings.addAll(getRequestMapping()
                 .stream()
                 .map(requestMappingType ->
                         new RequestMapping(requestMappingType, controller,jarLoader))

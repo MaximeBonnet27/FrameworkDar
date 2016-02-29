@@ -77,6 +77,7 @@
                 <configuration>
                     <schemaDirectory>src/main/resources/schemas</schemaDirectory>
                     <generateDirectory>${project.basedir}/src/main/java</generateDirectory>
+                    <extension>true</extension>
                     <args>
                         <arg>-XtoString</arg>
                     </args>

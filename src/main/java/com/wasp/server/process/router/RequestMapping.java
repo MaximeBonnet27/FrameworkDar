@@ -69,7 +69,7 @@ public class RequestMapping extends RequestMappingType {
     }
 
     private List<String> getDefaultsFormat() {
-        return Arrays.asList(TEXT, JSON, HTML, XML, QUERY_STRING);
+        return Arrays.asList(TEXT, JSON, HTML, QUERY_STRING, XML);
     }
 
     // recupere les class des arguments
