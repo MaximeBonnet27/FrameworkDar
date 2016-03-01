@@ -276,6 +276,15 @@ public class RequestMapping extends RequestMappingType {
         return formatTypes.stream().map(FormatType::getValue).collect(Collectors.toList());
     }
 
+    public static boolean clashingWith(RequestMapping rm1,RequestMapping rm2) {
+        return rm1.equivalentTo(rm2) || rm2.equivalentTo(rm1);
+    }
+
+    private boolean equivalentTo(RequestMapping other) {
+        return Pattern.compile(getMethod()).matcher(other.getMethod()).matches() &&
+                Pattern.compile(getResource()).matcher(other.getResource()).matches();
+    }
+
     @Override
     public FormatsType getContentType() {
         return delegate.getContentType();

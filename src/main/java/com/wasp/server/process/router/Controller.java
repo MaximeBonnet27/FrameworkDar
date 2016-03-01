@@ -36,6 +36,10 @@ public class Controller extends ControllerType {
         return null;
     }
 
+    public List<RequestMapping> getRequestMappings() {
+        return requestMappings;
+    }
+
     @Override
     public List<RequestMappingType> getRequestMapping() {
         return delegate.getRequestMapping();

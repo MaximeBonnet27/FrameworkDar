@@ -24,7 +24,9 @@ public class Router implements IProcess {
         for(ApplicationType app:configuration.getWasps().getApplication()) {
             String context = app.getContext();
             String location = app.getLocation();
-            applications.put(context, new Application(location));
+            Application application = new Application(location);
+            if(application.isLoaded())
+                applications.put(context, application);
             logger.info("context "+ context +" redirect to "+app.getLocation());
         }
     }
