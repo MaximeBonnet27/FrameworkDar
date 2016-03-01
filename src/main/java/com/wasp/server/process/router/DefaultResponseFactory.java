@@ -10,9 +10,7 @@ import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import static com.wasp.util.httpComponent.response.enums.EStatus.BAD_MAPPING;
-import static com.wasp.util.httpComponent.response.enums.EStatus.INTERNAL_SERVER_ERROR;
-import static com.wasp.util.httpComponent.response.enums.EStatus.NOT_FOUND;
+import static com.wasp.util.httpComponent.response.enums.EStatus.*;
 
 public abstract class DefaultResponseFactory {
 
@@ -40,7 +38,7 @@ public abstract class DefaultResponseFactory {
     public static IHttpResponse createResponseMappingException(MappingException exception, IHttpRequest request) {
         StringWriter stack = new StringWriter();
         exception.printStackTrace(new PrintWriter(stack));
-        return create(BAD_MAPPING,request.getMethod().getUrl().toString(),null,stack.toString());
+        return create(BAD_REQUEST,request.getMethod().getUrl().toString(),null,stack.toString());
     }
 
     public static IHttpResponse createResponseInternalError(Exception exception, IHttpRequest request) {
