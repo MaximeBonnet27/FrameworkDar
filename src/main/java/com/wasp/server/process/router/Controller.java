@@ -5,8 +5,6 @@ import com.wasp.schemas.wasp.RequestMappingType;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
 import org.jvnet.jaxb2_commons.lang.ToStringStrategy2;
 import org.jvnet.jaxb2_commons.locator.ObjectLocator;
-import org.xeustechnologies.jcl.JarClassLoader;
-import org.xeustechnologies.jcl.JclObjectFactory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,6 +19,7 @@ public class Controller extends ControllerType {
         this.delegate=delegate;
         Object controller = jarLoader.newInstance(getClazz());
         this.requestMappings=new ArrayList<>();
+        //creation requestMappings
         this.requestMappings.addAll(getRequestMapping()
                 .stream()
                 .map(requestMappingType ->

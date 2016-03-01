@@ -1,15 +1,13 @@
 package com.wasp;
 
+import org.apache.commons.io.output.StringBuilderWriter;
 import org.apache.log4j.Logger;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBElement;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
@@ -33,6 +31,19 @@ public class AppUtils {
         return unmarshal.getValue();
     }
 
+    //Class<T> doit est conforme pour jaxb
+    public <T> String toXml(T obj) throws JAXBException {
+        StringBuilderWriter writer = new StringBuilderWriter();
+        JAXBContext jaxbContext = JAXBContext.newInstance(obj.getClass());
+        Marshaller jaxbMarshaller = jaxbContext.createMarshaller();
+
+        // output pretty printed
+        jaxbMarshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
+
+        jaxbMarshaller.marshal(obj, writer);
+        return writer.toString();
+    }
+
     public String toJSON(Object o){
         String ressult="{}";
 
@@ -50,5 +61,4 @@ public class AppUtils {
         return mapper.readValue(json.getBytes(),clazz);
     }
 
-    //TODO XML to T, Class<T> doit est conforme pour jaxb
 }

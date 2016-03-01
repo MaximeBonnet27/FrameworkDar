@@ -38,6 +38,7 @@ public class GenericHttpServer extends ServerSocket {
     public void launchServer() {
         logger.info("Server listening on localhost:" + getLocalPort() + " ...");
         try {
+            //noinspection InfiniteLoopStatement
             while (true) {
                 Socket connectionSocket = accept();
                 new Thread(() -> serviceClient(connectionSocket)).start();

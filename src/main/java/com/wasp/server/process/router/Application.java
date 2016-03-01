@@ -1,7 +1,6 @@
 package com.wasp.server.process.router;
 
 import com.wasp.AppUtils;
-import com.wasp.schemas.JXBStringUtil;
 import com.wasp.schemas.wasp.RequestMappingType;
 import com.wasp.server.process.router.exceptions.MappingException;
 import com.wasp.util.httpComponent.common.enums.HttpContentTypes;
@@ -11,12 +10,14 @@ import com.wasp.util.httpComponent.response.implem.HttpResponseBuilder;
 import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
 import org.apache.log4j.Logger;
 
+import javax.xml.bind.JAXBException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields.ACCEPT;
 
+@SuppressWarnings("JavaDoc")
 public class Application extends ApplicationJarLoader {
     private static Logger logger = Logger.getLogger(Application.class);
 
@@ -33,13 +34,18 @@ public class Application extends ApplicationJarLoader {
                 .map(controller -> new Controller(controller, this))
                 .collect(Collectors.toList()));
 
-        loaded = checkConflicts();
+        checkConflicts();
     }
 
-
-    private boolean checkConflicts() {
+    /**
+     * verifie que les requetes ne sont pas en collistion en fonction:
+     * - des resources
+     * - des methodes
+     * - des content-types
+     * - des produce-types
+     */
+    private void checkConflicts() {
         conflicts = new HashMap<>();
-        boolean conflictsFound = false;
         List<RequestMapping> mappingTypes = controllers.stream()
                 .map(Controller::getRequestMappings)
                 .flatMap(Collection::stream)
@@ -53,14 +59,17 @@ public class Application extends ApplicationJarLoader {
                     continue;
                 if (RequestMapping.clashingWith(rm1, rm2)) {
                     registeConflict(rm1, rm2);
-                    conflictsFound = true;
                     logger.error("--- CONFLICT ---\n" + rm1 + "\n " + rm2);
                 }
             }
         }
-        return conflictsFound;
     }
 
+    /**
+     * registe two RequestMapping as conflict
+     * @param rmt1
+     * @param rmt2
+     */
     private void registeConflict(RequestMappingType rmt1, RequestMappingType rmt2) {
         if (!conflicts.containsKey(rmt1))
             conflicts.put(rmt1, new HashSet<>());
@@ -71,51 +80,65 @@ public class Application extends ApplicationJarLoader {
         conflicts.get(rmt2).add(rmt1);
     }
 
+    /**
+     *
+     * @param rmt1
+     * @param rmt2
+     * @return true if rmt1 and rmt2 are registered as in conflict, else false
+     */
     private boolean clashing(RequestMappingType rmt1, RequestMappingType rmt2) {
         Set<RequestMappingType> set = conflicts.get(rmt1);
         return set != null && set.contains(rmt2);
+    }
+
+
+    public boolean hasConflict(){
+        return conflicts.entrySet().stream().anyMatch(e -> !e.getValue().isEmpty());
     }
 
     public boolean isLoaded() {
         return loaded;
     }
 
+    public void setLoaded(boolean loaded) {
+        this.loaded = loaded;
+    }
+
+
+    /**
+     * find the correct callback to the request and return a IHttpResponse
+     * with correct content-type
+     * @param request to answer
+     * @return a IHttpResponse from the return's callback
+     * @throws MappingException if no callback found
+     */
     public IHttpResponse receive(IHttpRequest request) throws MappingException {
         RequestMapping requestMapping = findRequestMapping(request);
+
         if (requestMapping == null) {
             throw new MappingException("no mapping for resource " + request.getMethod().getUrl().getResource());
         }
 
-
         try {
-          /*  Object[] args = null;
-            // Si methode POST, il faut aller chercher les arguments dans le body
-            if(request.getMethod().getMethodType().equals(EMethodType.POST)){
-                args = HttpArgumentsParser.parseBody(request);
-            }
-            // Sinon, arguments dans la suite de l'url
-            else{
-                // Si il y en a
-                if(request.getMethod().getUrl().getArguments().size() > 0){
-                    args = HttpArgumentsParser.parseUrl(request);
-                }
-            }
-
-*/
             Object result = requestMapping.callback(request);
             if (result == null)
                 return new HttpResponseBuilder().noContent().build();
             if (result.getClass().isAssignableFrom(IHttpResponse.class))
                 return (IHttpResponse) result;
             return convertToHttpResponse(result, request);
-        } catch (InvocationTargetException | IllegalAccessException e) {
+        } catch (InvocationTargetException | IllegalAccessException | JAXBException e) {
             logger.error(e.getMessage());
+            //TODO return internal error response with e.getMessage()
+            return null;
         }
-        //TODO error intern
-        return null;
 
     }
 
+    /**
+     *
+     * @param request to mapping
+     * @return the correct RequestMapping for this request
+     */
     public RequestMapping findRequestMapping(IHttpRequest request) {
         for (Controller controller : controllers) {
             RequestMapping requestMapping = controller.findRequestMapping(request);
@@ -126,7 +149,14 @@ public class Application extends ApplicationJarLoader {
     }
 
     //TODO completed
-    private IHttpResponse convertToHttpResponse(Object obj, IHttpRequest request) {
+
+    /**
+     *
+     * @param obj to tranform in the correct format
+     * @param request who contains the format which the obj will be transformed to
+     * @return a IHttpResponse with a content-type who correspond to this obj transformed
+     */
+    private IHttpResponse convertToHttpResponse(Object obj, IHttpRequest request) throws JAXBException {
         Set<String> accepted = request.getHeader().get(ACCEPT);
         HttpResponseBuilder builder = new HttpResponseBuilder();
 
@@ -140,8 +170,7 @@ public class Application extends ApplicationJarLoader {
 
         } else if (accepted.contains(HttpContentTypes.XML)) {
             builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.XML);
-            builder.ok("");
-            //TODO
+            builder.ok(new AppUtils().toXml(obj));
         } else {
             builder.noContent();
         }

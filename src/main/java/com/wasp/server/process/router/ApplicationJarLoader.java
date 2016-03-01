@@ -16,6 +16,7 @@ import java.net.URL;
 
 public class ApplicationJarLoader {
     private static Logger logger=Logger.getLogger(ApplicationJarLoader.class);
+
     private WaspType applicationConfiguration;
 
     private JarClassLoader jcl;

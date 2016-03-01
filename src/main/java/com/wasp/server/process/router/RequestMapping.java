@@ -8,7 +8,11 @@ import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
 import org.apache.log4j.Logger;
 import org.jvnet.jaxb2_commons.lang.ToStringStrategy2;
 import org.jvnet.jaxb2_commons.locator.ObjectLocator;
+import org.xml.sax.SAXException;
 
+import javax.xml.bind.JAXBException;
+import javax.xml.parsers.ParserConfigurationException;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -31,6 +35,8 @@ public class RequestMapping extends RequestMappingType {
     private final Object controller;
     private Method method;
     private ApplicationJarLoader jarLoader;
+    //if resource if define as "/.../(a)/.../(b)/"
+    //will contain {a -> 1 , b -> 2}
     private HashMap<String, Integer> pathIndexes;
 
     public RequestMapping(RequestMappingType delegate, Object controller, ApplicationJarLoader jarLoader) {
@@ -53,12 +59,15 @@ public class RequestMapping extends RequestMappingType {
         }
     }
 
-    // si content type est null cela signifie
-    // qu'on doit tout mapper
+    /**
+     * if content-type is null that mean
+     * that we'll need to map all format types
+     * same thing for produce-type
+     */
     private void generateDefaultValueFormat() {
+        List<String> defaultsFormat = getDefaultsFormat();
         if (getContentType() == null) {
             FormatsType formatsType = new FormatsType();
-            List<String> defaultsFormat = getDefaultsFormat();
             for (String s : defaultsFormat) {
                 FormatType formatType = new FormatType();
                 formatType.setValue(s);
@@ -66,13 +75,25 @@ public class RequestMapping extends RequestMappingType {
             }
             setContentType(formatsType);
         }
+
+        if (getProduceType() == null) {
+            FormatsType formatsType = new FormatsType();
+            for (String s : defaultsFormat) {
+                FormatType formatType = new FormatType();
+                formatType.setValue(s);
+                formatsType.getFormat().add(formatType);
+            }
+            setProduceType(formatsType);
+        }
     }
 
     private List<String> getDefaultsFormat() {
         return Arrays.asList(TEXT, JSON, HTML, QUERY_STRING, XML);
     }
 
-    // recupere les class des arguments
+    /**
+     * @return classes of callback's arguments
+     */
     private Class<?>[] getArgumentsClasses() {
         ArrayList<Class<?>> classes = new ArrayList<>();
         List<ArgumentType> arguments = getArguments().getArgument();
@@ -100,7 +121,13 @@ public class RequestMapping extends RequestMappingType {
                 this.method.invoke(controller);
     }
 
-    // initialise les arguments en fonction de le type et de la requete
+    /**
+     * init callback's arguments with the request
+     *
+     * @param request contains all the information for init arguments
+     * @return Array of arguments initialized
+     * @throws MappingException if request is not able to correctly init arguments
+     */
     private Object[] parseArguments(IHttpRequest request) throws MappingException {
         ArrayList<Object> arguments = new ArrayList<>();
         List<ArgumentType> argumentTypes = getArguments().getArgument();
@@ -124,7 +151,12 @@ public class RequestMapping extends RequestMappingType {
         return arguments.toArray(new Object[arguments.size()]);
     }
 
-    // retourne un objet initiliser celon les regles de RequestBody
+    /**
+     * @param request      contains the request body
+     * @param argumentType contains the type with which get the body
+     * @return object who contains the request-body
+     * @throws MappingException if has any error with type
+     */
     private Object createRequestBody(IHttpRequest request, ArgumentType argumentType) throws MappingException {
         Class<?> clazz;
         try {
@@ -135,20 +167,30 @@ public class RequestMapping extends RequestMappingType {
         return convertType(request.getContent(), clazz);
     }
 
-    // retourne un objet initiliser celon les regles de RequestVariable
+    /**
+     * @param request      contains the url where we wan't to get the value
+     * @param argumentType contains the name of the value to get in the url
+     * @return object who contains the value
+     * @throws MappingException if value not found, bad type
+     */
     private Object createRequestVariable(IHttpRequest request, ArgumentType argumentType) throws MappingException {
         String value = request.getMethod().getUrl().getArguments().get(argumentType.getSourceRef());
         if (value == null)
             throw new MappingException("argument " + argumentType.getSourceRef() + " not found");
         try {
             return convertBasicType(value, Class.forName(argumentType.getType()));
-        } catch (Exception e) {
+        } catch (ClassNotFoundException e) {
             logger.error(e.getMessage());
-            throw new MappingException("request-variable must be java.lang.Integer, java.lang.Float or java.lang.String");
+            throw new MappingException("Request-variable must be java.lang.Integer, java.lang.Float or java.lang.String");
         }
     }
 
-    // retourne un objet initiliser celon les regles de pathVariable
+    /**
+     * @param request      contains the resource
+     * @param argumentType contains the index of the group to match in resource
+     * @return object who contains the value
+     * @throws MappingException if group not found or bad type
+     */
     private Object createPathVariable(IHttpRequest request, ArgumentType argumentType) throws MappingException {
         Integer index = pathIndexes.get(argumentType.getSourceRef());
         Matcher matcher = Pattern.compile(getResource()).matcher(request.getMethod().getUrl().getResource());
@@ -156,7 +198,7 @@ public class RequestMapping extends RequestMappingType {
             String token = matcher.group(index);
             try {
                 return convertBasicType(token, Class.forName(argumentType.getType()));
-            } catch (Exception e) {
+            } catch (ClassNotFoundException e) {
                 logger.error(e.getMessage());
                 throw new MappingException("path-variable must be java.lang.Integer, java.lang.Float or java.lang.String");
             }
@@ -166,13 +208,20 @@ public class RequestMapping extends RequestMappingType {
     }
 
 
+    /**
+     * @param content to convert
+     * @param clazz   type to convert to
+     * @return object of type clazz from the converion of content
+     * @throws MappingException if the convertion is not possible
+     */
+    @SuppressWarnings("unchecked")
     private Object convertType(String content, Class clazz) throws MappingException {
         List<String> formats = formatsToStrings(getContentType().getFormat());
         for (String format : formats) {
             switch (format) {
                 case TEXT:
                     try {
-                        return convertBasicType(content,clazz);
+                        return convertBasicType(content, clazz);
                     } catch (Exception e) {
                         logger.warn(e.getMessage());
                     }
@@ -190,9 +239,14 @@ public class RequestMapping extends RequestMappingType {
                         break;
                     }
                 case XML:
-                    //TODO parse to xml
                     if (clazz.isAssignableFrom(String.class))
                         return content;
+                    else
+                        try {
+                            new AppUtils().loadXML(new ByteArrayInputStream(content.getBytes()), clazz);
+                        } catch (JAXBException | ParserConfigurationException | SAXException e) {
+                            logger.warn(e.getMessage());
+                        }
                     break;
                 case QUERY_STRING:
                     //TODO parse
@@ -204,7 +258,13 @@ public class RequestMapping extends RequestMappingType {
         throw new MappingException("error format");
     }
 
-    private Object convertBasicType(String token, Class clazz) throws Exception {
+    /**
+     * @param token to convert
+     * @param clazz type to convert to
+     * @return object of type clazz from the converion of token
+     * @throws MappingException if can't be convert
+     */
+    private Object convertBasicType(String token, Class clazz) throws MappingException {
         switch (clazz.getName()) {
             case "java.lang.Integer":
                 return Integer.parseInt(token);
@@ -217,12 +277,15 @@ public class RequestMapping extends RequestMappingType {
         }
     }
 
-
-    // indexation des groupes declaré dans resource et transformation en regex
-    // exemple:
-    // resource = "/path/(src)/to/(dest)
-    // HashMap = src->1 ; dest-> 2
-    // newresource = "/path/([^/]+)/to/([^/]+)"
+    /**
+     * indexation des groupes declaré dans resource et transformation en regex
+     * exemple:
+     * resource = "/path/(src)/to/(dest)
+     * HashMap = src->1 ; dest-> 2
+     * newresource = "/path/([^/]+)/to/([^/]+)"
+     *
+     * @return indexes of groups in resource regex
+     */
     private HashMap<String, Integer> indexingPathVariable() {
         HashMap<String, Integer> result = new HashMap<>();
         int counter = 0;
@@ -244,7 +307,7 @@ public class RequestMapping extends RequestMappingType {
     }
 
     public boolean isMapping(IHttpRequest request) {
-        //TODO to complete
+        //TODO to verify
         //mapping resource?
         if (!Pattern.compile(getResource()).matcher(request.getMethod().getUrl().getResource()).matches()) {
             return false;
@@ -267,8 +330,6 @@ public class RequestMapping extends RequestMappingType {
                 return false;
             }
         }
-
-        //TODO mapper les RequestVariable aussi
         return true;
     }
 
@@ -276,13 +337,19 @@ public class RequestMapping extends RequestMappingType {
         return formatTypes.stream().map(FormatType::getValue).collect(Collectors.toList());
     }
 
-    public static boolean clashingWith(RequestMapping rm1,RequestMapping rm2) {
+    public static boolean clashingWith(RequestMapping rm1, RequestMapping rm2) {
         return rm1.equivalentTo(rm2) || rm2.equivalentTo(rm1);
     }
 
     private boolean equivalentTo(RequestMapping other) {
+        List<String> contentFormats = formatsToStrings(getContentType().getFormat());
+        List<String> produceFormats = formatsToStrings(getProduceType().getFormat());
         return Pattern.compile(getMethod()).matcher(other.getMethod()).matches() &&
-                Pattern.compile(getResource()).matcher(other.getResource()).matches();
+                (Pattern.compile(getResource()).matcher(other.getResource()).matches() || getResource().equals(other.getResource())) && // when both are regex
+                formatsToStrings(other.getContentType().getFormat()).stream().anyMatch(contentFormats::contains) &&
+                formatsToStrings(other.getProduceType().getFormat()).stream().anyMatch(produceFormats::contains);
+
+
     }
 
     @Override
