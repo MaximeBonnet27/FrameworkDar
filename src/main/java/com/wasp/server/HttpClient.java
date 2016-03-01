@@ -1,5 +1,7 @@
 package com.wasp.server;
 
+import com.wasp.util.httpComponent.common.enums.HttpContentTypes;
+import com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields;
 import com.wasp.util.httpComponent.request.exceptions.MethodeTypeException;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
 import com.wasp.util.httpComponent.response.enums.HttpResponseHeaderFields;
@@ -13,6 +15,9 @@ import java.io.InputStreamReader;
 import java.net.Socket;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+
+import static com.wasp.util.httpComponent.common.enums.HttpContentTypes.*;
+import static com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields.*;
 
 public class HttpClient {
     private static final Logger logger= Logger.getLogger(HttpClient.class);
@@ -28,6 +33,8 @@ public class HttpClient {
     public IHttpRequest getHttpRequest() throws IOException, MethodeTypeException {
         if(request==null)
             this.request=HttpRequestParser.parse(new BufferedReader(new InputStreamReader(socket.getInputStream())));
+        if(this.request.getHeader().get(ACCEPT).contains("*/*"))
+            this.request.getHeader().get(ACCEPT).addAll(getAllContentTypes());
         return request;
     }
 

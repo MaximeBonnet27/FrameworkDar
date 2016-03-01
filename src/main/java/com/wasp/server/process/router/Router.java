@@ -7,6 +7,7 @@ import com.wasp.server.process.router.exceptions.MappingException;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
 import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
 import org.apache.log4j.Logger;
+import org.xeustechnologies.jcl.exception.JclException;
 
 import java.util.HashMap;
 
@@ -22,22 +23,24 @@ public class Router implements IProcess {
         for (ApplicationType app : configuration.getWasps().getApplication()) {
             String context = app.getContext();
             String location = app.getLocation();
-            Application application = new Application(location);
+            try {
+                Application application = new Application(location);
 
-            if (application.hasConflict())
-                application.setLoaded(false);
-            else {
-                application.setLoaded(true);
-                applications.put(context, application);
+                if (application.hasConflict())
+                    application.setLoaded(false);
+                else {
+                    application.setLoaded(true);
+                    applications.put(context, application);
+                }
+                if (application.isLoaded()) {
+                    logger.info("Application for context: " + context + " loaded");
+                    logger.info("context " + context + " redirect to " + app.getLocation());
+                } else {
+                    logger.warn("Application for context: " + context + " not loaded");
+                }
+            }catch (JclException e){
+                logger.error(e.getMessage());
             }
-
-            if (application.isLoaded()) {
-                logger.info("Application for context: " + context + " loaded");
-            } else {
-                logger.warn("Application for context: " + context + " not loaded");
-            }
-
-            logger.info("context " + context + " redirect to " + app.getLocation());
         }
     }
 

@@ -64,6 +64,7 @@
                     <xs:enumeration value="path-variable" />
                     <xs:enumeration value="request-variable" />
                     <xs:enumeration value="request-body" />
+                    <xs:enumeration value="request" />
                 </xs:restriction>
             </xs:simpleType>
         </xs:attribute>

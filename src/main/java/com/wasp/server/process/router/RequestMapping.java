@@ -17,7 +17,6 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -65,7 +64,7 @@ public class RequestMapping extends RequestMappingType {
      * same thing for produce-type
      */
     private void generateDefaultValueFormat() {
-        List<String> defaultsFormat = getDefaultsFormat();
+        List<String> defaultsFormat = getAllContentTypes();
         if (getContentType() == null) {
             FormatsType formatsType = new FormatsType();
             for (String s : defaultsFormat) {
@@ -85,10 +84,6 @@ public class RequestMapping extends RequestMappingType {
             }
             setProduceType(formatsType);
         }
-    }
-
-    private List<String> getDefaultsFormat() {
-        return Arrays.asList(TEXT, JSON, HTML, QUERY_STRING, XML);
     }
 
     /**
@@ -142,6 +137,9 @@ public class RequestMapping extends RequestMappingType {
                     break;
                 case "request-body":
                     arguments.add(createRequestBody(request, argumentType));
+                    break;
+                case "request":
+                    arguments.add(request);
                     break;
                 default:
                     logger.error(argumentType.getSourceType() + " not implemented");
@@ -317,10 +315,12 @@ public class RequestMapping extends RequestMappingType {
         if (!Pattern.compile(getResource()).matcher(request.getMethod().getUrl().getResource()).matches()) {
             return false;
         }
+
         //mapping methode?
         if (!Pattern.compile(getMethod()).matcher(request.getMethod().getMethodType().toString()).matches()) {
             return false;
         }
+
         //mapping contentType?
         if (getContentType() != null && request.getHeader().get(CONTENT_TYPE) != null) {
             List<String> formats = formatsToStrings(getContentType().getFormat());
@@ -328,7 +328,8 @@ public class RequestMapping extends RequestMappingType {
                 return false;
             }
         }
-        //mapping accet?
+
+        //mapping accept?
         if (getProduceType() != null && request.getHeader().get(ACCEPT) != null) {
             List<String> formats = formatsToStrings(getProduceType().getFormat());
             if (!request.getHeader().get(ACCEPT).stream().anyMatch(formats::contains)) {

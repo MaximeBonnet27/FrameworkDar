@@ -116,7 +116,7 @@ public class Application extends ApplicationJarLoader {
         RequestMapping requestMapping = findRequestMapping(request);
 
         if (requestMapping == null) {
-            throw new MappingException("no mapping for resource " + request.getMethod().getUrl().getResource());
+            return DefaultResponseFactory.createNotFoundResource(request);
         }
 
         try {

@@ -60,5 +60,11 @@
             </arguments>
         </request-mapping>
 
+        <request-mapping resource="/p" method="POST" callback="addPoint">
+            <arguments>
+                <argument source-type="request"
+                          type="com.wasp.util.httpComponent.request.interfaces.IHttpRequest"/>
+            </arguments>
+        </request-mapping>
     </controller>
 </wasp>
