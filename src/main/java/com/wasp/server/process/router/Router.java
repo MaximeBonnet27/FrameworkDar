@@ -50,7 +50,7 @@ public class Router implements IProcess {
                 return app.receive(request);
             } catch (MappingException e) {
                 logger.warn(e.getMessage());
-                return DefaultResponseFactory.createResponseMappingException(e,request);
+                return DefaultResponseFactory.createResponseBadRequestException(e, request);
             }
         }
         logger.warn("Unknown context : " + context);

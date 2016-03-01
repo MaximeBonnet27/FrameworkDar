@@ -1,6 +1,7 @@
 package com.wasp.server.process.router;
 
 import com.wasp.server.process.router.exceptions.MappingException;
+import com.wasp.util.httpComponent.common.enums.HttpProtocolVersions;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
 import com.wasp.util.httpComponent.request.interfaces.IUrl;
 import com.wasp.util.httpComponent.response.enums.EStatus;
@@ -25,7 +26,7 @@ public abstract class DefaultResponseFactory {
             builder.append("<pre>exception:\n").append(exception).append("</pre>");
         builder.append("</body></html>");
 
-        return new HttpResponseBuilder().status(status).content(builder.toString()).build();
+        return new HttpResponseBuilder().protocol(HttpProtocolVersions.HTTP_1_1).status(status).content(builder.toString()).build();
     }
 
     public static IHttpResponse createResponseNoApplicationFoundForContext(IHttpRequest request) {
@@ -35,10 +36,16 @@ public abstract class DefaultResponseFactory {
 
 
 
-    public static IHttpResponse createResponseMappingException(MappingException exception, IHttpRequest request) {
+    public static IHttpResponse createResponseBadRequestException(MappingException exception, IHttpRequest request) {
         StringWriter stack = new StringWriter();
         exception.printStackTrace(new PrintWriter(stack));
         return create(BAD_REQUEST,request.getMethod().getUrl().toString(),null,stack.toString());
+    }
+
+    public static IHttpResponse createResponseBadRequestException(Exception exception) {
+        StringWriter stack = new StringWriter();
+        exception.printStackTrace(new PrintWriter(stack));
+        return create(BAD_REQUEST,"Unknown",null,stack.toString());
     }
 
     public static IHttpResponse createResponseInternalError(Exception exception, IHttpRequest request) {

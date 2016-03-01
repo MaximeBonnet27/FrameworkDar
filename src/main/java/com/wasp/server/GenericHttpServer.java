@@ -1,5 +1,6 @@
 package com.wasp.server;
 
+import com.wasp.server.process.router.DefaultResponseFactory;
 import com.wasp.util.httpComponent.common.enums.HttpProtocolVersions;
 import com.wasp.server.process.interfaces.IProcess;
 import com.wasp.util.httpComponent.request.exceptions.MethodeTypeException;
@@ -72,12 +73,9 @@ public class GenericHttpServer extends ServerSocket {
             request = httpClient.getHttpRequest();
             logger.info("receive :\n" + request);
             response = process.run(request);
-        } catch (IOException | MethodeTypeException e) { // BAD REQUEST
+        } catch (IOException | MethodeTypeException e) {
             logger.error(e.getMessage());
-            response = new HttpResponseBuilder().protocol(HttpProtocolVersions.HTTP_1_1)
-                    .status(EStatus.BAD_REQUEST)
-                    .content(e.getMessage())
-                    .build();
+            response= DefaultResponseFactory.createResponseBadRequestException(e);
         }
 
         httpClient.sendHttpResponse(response);
