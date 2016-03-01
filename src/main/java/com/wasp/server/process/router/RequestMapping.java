@@ -265,15 +265,20 @@ public class RequestMapping extends RequestMappingType {
      * @throws MappingException if can't be convert
      */
     private Object convertBasicType(String token, Class clazz) throws MappingException {
-        switch (clazz.getName()) {
-            case "java.lang.Integer":
-                return Integer.parseInt(token);
-            case "java.lang.Float":
-                return Float.parseFloat(token);
-            case "java.lang.String":
-                return token;
-            default:
-                throw new MappingException(token + " can't be parse to " + clazz.getName());
+        try {
+
+            switch (clazz.getName()) {
+                case "java.lang.Integer":
+                    return Integer.parseInt(token);
+                case "java.lang.Float":
+                    return Float.parseFloat(token);
+                case "java.lang.String":
+                    return token;
+                default:
+                    throw new MappingException(token + " can't be parse to " + clazz.getName());
+            }
+        }catch (NumberFormatException e){
+            throw new MappingException(e.getMessage());
         }
     }
 

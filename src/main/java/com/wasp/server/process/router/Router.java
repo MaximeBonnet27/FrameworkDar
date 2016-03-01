@@ -5,8 +5,6 @@ import com.wasp.schemas.wasp_conf.WaspConfigType;
 import com.wasp.server.process.interfaces.IProcess;
 import com.wasp.server.process.router.exceptions.MappingException;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
-import com.wasp.util.httpComponent.response.enums.EStatus;
-import com.wasp.util.httpComponent.response.implem.HttpResponseBuilder;
 import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
 import org.apache.log4j.Logger;
 
@@ -52,13 +50,11 @@ public class Router implements IProcess {
                 return app.receive(request);
             } catch (MappingException e) {
                 logger.warn(e.getMessage());
-                //TODO resource non accessible default 404
-                return new HttpResponseBuilder().status(EStatus.NOT_FOUND).build();
+                return DefaultResponseFactory.createResponseMappingException(e,request);
             }
         }
         logger.warn("Unknown context : " + context);
-        //TODO context non accessible default 404
-        return new HttpResponseBuilder().status(EStatus.NOT_FOUND).build();
+        return DefaultResponseFactory.createResponseNoApplicationFoundForContext(request);
     }
 
 

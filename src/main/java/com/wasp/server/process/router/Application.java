@@ -128,8 +128,7 @@ public class Application extends ApplicationJarLoader {
             return convertToHttpResponse(result, request);
         } catch (InvocationTargetException | IllegalAccessException | JAXBException e) {
             logger.error(e.getMessage());
-            //TODO return internal error response with e.getMessage()
-            return null;
+            return DefaultResponseFactory.createResponseInternalError(e,request);
         }
 
     }
