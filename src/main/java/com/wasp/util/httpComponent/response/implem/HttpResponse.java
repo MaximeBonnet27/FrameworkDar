@@ -3,6 +3,8 @@ package com.wasp.util.httpComponent.response.implem;
 import com.wasp.util.httpComponent.response.enums.EStatus;
 import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
 
+import java.util.List;
+
 public class HttpResponse implements IHttpResponse {
 
     private String protocol;
@@ -55,9 +57,19 @@ public class HttpResponse implements IHttpResponse {
     }
 
     @Override
+    public List<HttpCookie> getCookies() {
+        return  getHeader().getCookies();
+    }
+
+    @Override
+    public void setCookie(HttpCookie cookie) {
+        getHeader().addCookie(cookie);
+    }
+
+    @Override
     public String toString() {
         return protocol + " " + status + "\r\n"
-                + header // Le dernier header contient déjà le retour à la ligne
+                + header// Le dernier header contient déjà le retour à la ligne
                 + "\r\n" // Saut de ligne entre header et content
                 + content;
     }

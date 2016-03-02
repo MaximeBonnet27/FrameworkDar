@@ -53,6 +53,10 @@ public class HttpResponseBuilder {
         return this;
     }
 
+    public HttpResponseBuilder setCookie(HttpCookie cookie){
+        response.setCookie(cookie);
+        return this;
+    }
     public IHttpResponse build(){
         return response;
     }

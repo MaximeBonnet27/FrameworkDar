@@ -30,12 +30,14 @@ public abstract class HttpHeader extends HashMap<String, Set<String>> implements
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        entrySet().stream()
-                .forEach(entry -> sb
-                        .append(entry.getKey())
-                        .append(": ")
-                        .append(entry.getValue().toString().replaceAll("^\\[|]$", ""))
-                        .append("\r\n"));
+        for(Entry<String,Set<String>> entry:entrySet()){
+            sb.append(entry.getKey()).append(": ");
+            for(String value:entry.getValue()) {
+                sb.append(value).append("; ");
+            }
+            sb.append("\n");
+        }
+        sb.append("\r\n");
         return sb.toString();
     }
 }

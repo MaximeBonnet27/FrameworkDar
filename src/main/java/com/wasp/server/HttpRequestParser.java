@@ -34,7 +34,11 @@ public abstract class HttpRequestParser {
             String[] entries = line.split(":");
             entries[0]=entries[0].trim();
             entries[1]=entries[1].trim();
-            header.addItems(entries[0], Arrays.asList(entries[1].split(";")));
+            //TODO some headerItem need a specifique parser
+            if(entries[0].equals("User-Agent"))
+                header.addItems(entries[0], Arrays.asList(entries[1]));
+            else
+                header.addItems(entries[0], Arrays.asList(entries[1].split(";")));
         }
 
         //Parser Content

@@ -8,6 +8,7 @@ public class HttpRequest implements IHttpRequest {
     private IMethod method;
     private HttpRequestHeader header;
     private String content;
+    private HttpSession session;
 
     public HttpRequest() {
         header = new HttpRequestHeader();
@@ -43,6 +44,16 @@ public class HttpRequest implements IHttpRequest {
     @Override
     public void setContent(String content) {
         this.content = content;
+    }
+
+    @Override
+    public HttpSession getHttpSession() {
+        return this.session;
+    }
+
+    @Override
+    public void setHttpSession(HttpSession session) {
+        this.session=session;
     }
 
     @Override
