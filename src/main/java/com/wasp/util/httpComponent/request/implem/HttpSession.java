@@ -7,13 +7,13 @@ import java.util.HashMap;
 public final class HttpSession  extends HashMap<String,Object>{
     private final String id;
     private final ZonedDateTime creationDate;
-    private final ZonedDateTime expireDate;
+    private ZonedDateTime expireDate;
 
     public HttpSession(String id) {
         super();
         this.id = id;
         this.creationDate= ZonedDateTime.now(ZoneId.of("GMT"));
-        //TODO dans fichier de casp-conf
+        //TODO dans fichier de wasp-conf
         expireDate=creationDate.plusDays(30);
     }
 
@@ -27,5 +27,9 @@ public final class HttpSession  extends HashMap<String,Object>{
 
     public ZonedDateTime getExpireDate() {
         return expireDate;
+    }
+
+    public void setExpireDate(ZonedDateTime expireDate) {
+        this.expireDate = expireDate;
     }
 }

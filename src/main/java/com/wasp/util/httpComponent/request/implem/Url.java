@@ -14,7 +14,7 @@ public class Url implements IUrl {
 
     public Url(String url) {
         //TODO throw exception si pas conforme
-        Pattern pattern = Pattern.compile("^(/[^/]+)((/[^/?]+)*)(\\?(.*))?");
+        Pattern pattern = Pattern.compile("^(/[^/]*)((/[^/?]+)*)(\\?(.*))?");
         Matcher matcher = pattern.matcher(url);
         if(matcher.matches()) {
             this.context= matcher.group(1);
