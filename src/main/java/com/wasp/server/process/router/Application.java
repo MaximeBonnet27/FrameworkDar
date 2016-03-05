@@ -16,8 +16,6 @@ import java.util.stream.Collectors;
 
 import static com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields.ACCEPT;
 
-//import com.wasp.schemas.wasp.RequestMappingType;
-
 @SuppressWarnings("JavaDoc")
 public class Application extends ApplicationJarLoader {
     private static Logger logger = Logger.getLogger(Application.class);

@@ -16,7 +16,6 @@ import java.net.Socket;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.HashMap;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -111,11 +110,9 @@ public class HttpClient {
     }
 
 
-    private boolean hasCookieKey(){
+    private boolean hasCookieKey() {
         Set<String> cookie = this.request.getHeader().get("Cookie");
-        if(cookie==null)
-            return false;
-        return cookie.stream().filter(c -> c.matches("^waspKey=.+")).findAny().isPresent();
+        return cookie != null && cookie.stream().filter(c -> c.matches("^waspKey=.+")).findAny().isPresent();
     }
 
     private String keyFromCookie(){
