@@ -1,0 +1,47 @@
+{
+  "controllers": [
+    {"className": "stl.upmc.com.controller.PointController", "requestMappings":
+    [
+        {"resource": "/p/list", "method": "GET", "callback": "list"},
+
+        {"resource": "/p/(id)/x", "method": "GET", "callback": "getX",
+          "arguments": [{"sourceType": "path-variable", "sourceRef": "id", "type": "java.lang.Integer"}]
+        },
+
+        {"resource": "/p/(id)/y", "method": "GET", "callback": "getY",
+          "arguments": [{"sourceType": "path-variable", "sourceRef": "id", "type": "java.lang.Integer"}]
+        },
+
+        {"resource": "/p/(id)", "method": "PUT", "callback": "update",
+          "arguments": [
+            {"sourceType": "path-variable", "sourceRef": "id", "type": "java.lang.Integer"},
+            {"sourceType": "request-variable", "sourceRef": "x", "type": "java.lang.Integer"},
+            {"sourceType": "request-variable", "sourceRef": "y", "type": "java.lang.Integer"}
+          ]
+        },
+
+        {"resource": "/p", "method": "POST", "callback": "addPointXml",
+          "contentType": ["application/xml"],
+          "produceType": ["application/xml"],
+          "arguments": [
+            {"sourceType": "request-body", "type": "stl.upmc.com.model.Point"}
+          ]
+        },
+
+        {"resource": "/p", "method": "POST", "callback": "addPointJson",
+          "contentType": ["application/json"],
+          "produceType": ["application/json"],
+          "arguments": [
+            {"sourceType": "request-body", "type": "stl.upmc.com.model.Point"}
+          ]
+        },
+
+        {"resource": "/p/p", "method": "POST", "callback": "addPoint",
+          "arguments": [
+            {"sourceType": "request", "type": "com.wasp.util.httpComponent.request.interfaces.IHttpRequest"}
+          ]
+        }
+      ]
+    }
+  ]
+}

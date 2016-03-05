@@ -112,7 +112,10 @@ public class HttpClient {
 
 
     private boolean hasCookieKey(){
-        return this.request.getHeader().get("Cookie").stream().filter(c -> c.matches("^waspKey=.+")).findAny().isPresent();
+        Set<String> cookie = this.request.getHeader().get("Cookie");
+        if(cookie==null)
+            return false;
+        return cookie.stream().filter(c -> c.matches("^waspKey=.+")).findAny().isPresent();
     }
 
     private String keyFromCookie(){

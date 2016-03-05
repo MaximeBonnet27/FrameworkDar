@@ -1,7 +1,6 @@
 package com.wasp.server.process.router;
 
 import com.wasp.AppUtils;
-import com.wasp.schemas.wasp.RequestMappingType;
 import com.wasp.server.process.router.exceptions.MappingException;
 import com.wasp.util.httpComponent.common.enums.HttpContentTypes;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
@@ -17,21 +16,23 @@ import java.util.stream.Collectors;
 
 import static com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields.ACCEPT;
 
+//import com.wasp.schemas.wasp.RequestMappingType;
+
 @SuppressWarnings("JavaDoc")
 public class Application extends ApplicationJarLoader {
     private static Logger logger = Logger.getLogger(Application.class);
 
-    private List<Controller> controllers;
+    private List<ControllerExtends> controllerExtendses;
     private boolean loaded;
-    private HashMap<RequestMappingType, Set<RequestMappingType>> conflicts;
+    private HashMap<RequestMappingExtends, Set<RequestMappingExtends>> conflicts;
 
     public Application(String jarLocation) {
         super(jarLocation);
-        this.controllers = new ArrayList<>();
-        controllers.addAll(getApplicationConfiguration()
-                .getController()
+        this.controllerExtendses = new ArrayList<>();
+        controllerExtendses.addAll(getApplicationConfiguration()
+                .getControllers()
                 .stream()
-                .map(controller -> new Controller(controller, this))
+                .map(controller -> new ControllerExtends(controller, this))
                 .collect(Collectors.toList()));
 
         checkConflicts();
@@ -46,18 +47,18 @@ public class Application extends ApplicationJarLoader {
      */
     private void checkConflicts() {
         conflicts = new HashMap<>();
-        List<RequestMapping> mappingTypes = controllers.stream()
-                .map(Controller::getRequestMappings)
+        List<RequestMappingExtends> mappingTypes = controllerExtendses.stream()
+                .map(ControllerExtends::getRequestMappingExtendses)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
 
         for (int i = 0; i < mappingTypes.size() - 1; i++) {
-            RequestMapping rm1 = mappingTypes.get(i);
+            RequestMappingExtends rm1 = mappingTypes.get(i);
             for (int j = i + 1; j < mappingTypes.size(); j++) {
-                RequestMapping rm2 = mappingTypes.get(j);
+                RequestMappingExtends rm2 = mappingTypes.get(j);
                 if (clashing(rm1, rm2))
                     continue;
-                if (RequestMapping.clashingWith(rm1, rm2)) {
+                if (RequestMappingExtends.clashingWith(rm1, rm2)) {
                     registeConflict(rm1, rm2);
                     logger.error("--- CONFLICT ---\n" + rm1 + "\n " + rm2);
                 }
@@ -70,7 +71,7 @@ public class Application extends ApplicationJarLoader {
      * @param rmt1
      * @param rmt2
      */
-    private void registeConflict(RequestMappingType rmt1, RequestMappingType rmt2) {
+    private void registeConflict(RequestMappingExtends rmt1, RequestMappingExtends rmt2) {
         if (!conflicts.containsKey(rmt1))
             conflicts.put(rmt1, new HashSet<>());
         if (!conflicts.containsKey(rmt2))
@@ -86,8 +87,8 @@ public class Application extends ApplicationJarLoader {
      * @param rmt2
      * @return true if rmt1 and rmt2 are registered as in conflict, else false
      */
-    private boolean clashing(RequestMappingType rmt1, RequestMappingType rmt2) {
-        Set<RequestMappingType> set = conflicts.get(rmt1);
+    private boolean clashing(RequestMappingExtends rmt1, RequestMappingExtends rmt2) {
+        Set<RequestMappingExtends> set = conflicts.get(rmt1);
         return set != null && set.contains(rmt2);
     }
 
@@ -113,14 +114,14 @@ public class Application extends ApplicationJarLoader {
      * @throws MappingException if no callback found
      */
     public IHttpResponse receive(IHttpRequest request) throws MappingException {
-        RequestMapping requestMapping = findRequestMapping(request);
+        RequestMappingExtends requestMappingExtends = findRequestMapping(request);
 
-        if (requestMapping == null) {
+        if (requestMappingExtends == null) {
             return DefaultResponseFactory.createNotFoundResource(request);
         }
 
         try {
-            Object result = requestMapping.callback(request);
+            Object result = requestMappingExtends.callback(request);
             if (result == null)
                 return new HttpResponseBuilder().noContent().build();
             if (result.getClass().isAssignableFrom(IHttpResponse.class))
@@ -138,11 +139,11 @@ public class Application extends ApplicationJarLoader {
      * @param request to mapping
      * @return the correct RequestMapping for this request
      */
-    public RequestMapping findRequestMapping(IHttpRequest request) {
-        for (Controller controller : controllers) {
-            RequestMapping requestMapping = controller.findRequestMapping(request);
-            if (requestMapping != null)
-                return requestMapping;
+    public RequestMappingExtends findRequestMapping(IHttpRequest request) {
+        for (ControllerExtends controllerExtends : controllerExtendses) {
+            RequestMappingExtends requestMappingExtends = controllerExtends.findRequestMapping(request);
+            if (requestMappingExtends != null)
+                return requestMappingExtends;
         }
         return null;
     }

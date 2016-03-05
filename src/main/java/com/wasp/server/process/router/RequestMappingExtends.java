@@ -1,13 +1,11 @@
 package com.wasp.server.process.router;
 
 import com.wasp.AppUtils;
-import com.wasp.schemas.JXBStringUtil;
-import com.wasp.schemas.wasp.*;
+import com.wasp.configuration.wasp.Argument;
+import com.wasp.configuration.wasp.RequestMapping;
 import com.wasp.server.process.router.exceptions.MappingException;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
 import org.apache.log4j.Logger;
-import org.jvnet.jaxb2_commons.lang.ToStringStrategy2;
-import org.jvnet.jaxb2_commons.locator.ObjectLocator;
 import org.xml.sax.SAXException;
 
 import javax.xml.bind.JAXBException;
@@ -21,16 +19,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import static com.wasp.util.httpComponent.common.enums.HttpContentTypes.*;
 import static com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields.ACCEPT;
 import static com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields.CONTENT_TYPE;
 
-public class RequestMapping extends RequestMappingType {
-    private static Logger logger = Logger.getLogger(RequestMapping.class);
 
-    private final RequestMappingType delegate;
+public class RequestMappingExtends extends RequestMapping {
+    private static Logger logger = Logger.getLogger(RequestMappingExtends.class);
+
+    private final RequestMapping delegate;
     private final Object controller;
     private Method method;
     private ApplicationJarLoader jarLoader;
@@ -38,7 +36,7 @@ public class RequestMapping extends RequestMappingType {
     //will contain {a -> 1 , b -> 2}
     private HashMap<String, Integer> pathIndexes;
 
-    public RequestMapping(RequestMappingType delegate, Object controller, ApplicationJarLoader jarLoader) {
+    public RequestMappingExtends(RequestMapping delegate, Object controller, ApplicationJarLoader jarLoader) {
         this.delegate = delegate;
         this.controller = controller;
         this.jarLoader = jarLoader;
@@ -50,7 +48,7 @@ public class RequestMapping extends RequestMappingType {
                 this.method = this.controller.getClass().getDeclaredMethod(getCallback());
 
             this.pathIndexes = indexingPathVariable();
-            generateDefaultValueFormat();
+            //generateDefaultValueFormat();
 
             logger.info(this);
         } catch (NoSuchMethodException e) {
@@ -59,40 +57,12 @@ public class RequestMapping extends RequestMappingType {
     }
 
     /**
-     * if content-type is null that mean
-     * that we'll need to map all format types
-     * same thing for produce-type
-     */
-    private void generateDefaultValueFormat() {
-        List<String> defaultsFormat = getAllContentTypes();
-        if (getContentType() == null) {
-            FormatsType formatsType = new FormatsType();
-            for (String s : defaultsFormat) {
-                FormatType formatType = new FormatType();
-                formatType.setValue(s);
-                formatsType.getFormat().add(formatType);
-            }
-            setContentType(formatsType);
-        }
-
-        if (getProduceType() == null) {
-            FormatsType formatsType = new FormatsType();
-            for (String s : defaultsFormat) {
-                FormatType formatType = new FormatType();
-                formatType.setValue(s);
-                formatsType.getFormat().add(formatType);
-            }
-            setProduceType(formatsType);
-        }
-    }
-
-    /**
      * @return classes of callback's arguments
      */
     private Class<?>[] getArgumentsClasses() {
         ArrayList<Class<?>> classes = new ArrayList<>();
-        List<ArgumentType> arguments = getArguments().getArgument();
-        for (ArgumentType arg : arguments) {
+        List<Argument> arguments = getArguments();
+        for (Argument arg : arguments) {
             try {
                 classes.add(Class.forName(arg.getType()));
             } catch (ClassNotFoundException e) {
@@ -125,24 +95,24 @@ public class RequestMapping extends RequestMappingType {
      */
     private Object[] parseArguments(IHttpRequest request) throws MappingException {
         ArrayList<Object> arguments = new ArrayList<>();
-        List<ArgumentType> argumentTypes = getArguments().getArgument();
+        List<Argument> argumentList = getArguments();
 
-        for (ArgumentType argumentType : argumentTypes) {
-            switch (argumentType.getSourceType()) {
+        for (Argument argument : argumentList) {
+            switch (argument.getSourceType()) {
                 case "path-variable":
-                    arguments.add(createPathVariable(request, argumentType));
+                    arguments.add(createPathVariable(request, argument));
                     break;
                 case "request-variable":
-                    arguments.add(createRequestVariable(request, argumentType));
+                    arguments.add(createRequestVariable(request, argument));
                     break;
                 case "request-body":
-                    arguments.add(createRequestBody(request, argumentType));
+                    arguments.add(createRequestBody(request, argument));
                     break;
                 case "request":
                     arguments.add(request);
                     break;
                 default:
-                    logger.error(argumentType.getSourceType() + " not implemented");
+                    logger.error(argument.getSourceType() + " not implemented");
             }
         }
 
@@ -151,32 +121,32 @@ public class RequestMapping extends RequestMappingType {
 
     /**
      * @param request      contains the request body
-     * @param argumentType contains the type with which get the body
+     * @param argument contains the type with which get the body
      * @return object who contains the request-body
      * @throws MappingException if has any error with type
      */
-    private Object createRequestBody(IHttpRequest request, ArgumentType argumentType) throws MappingException {
+    private Object createRequestBody(IHttpRequest request, Argument argument) throws MappingException {
         Class<?> clazz;
         try {
-            clazz = Class.forName(argumentType.getType());
+            clazz = Class.forName(argument.getType());
         } catch (ClassNotFoundException e) {
-            clazz = jarLoader.loadClass(argumentType.getType());
+            clazz = jarLoader.loadClass(argument.getType());
         }
         return convertType(request.getContent(), clazz);
     }
 
     /**
      * @param request      contains the url where we wan't to get the value
-     * @param argumentType contains the name of the value to get in the url
+     * @param argument contains the name of the value to get in the url
      * @return object who contains the value
      * @throws MappingException if value not found, bad type
      */
-    private Object createRequestVariable(IHttpRequest request, ArgumentType argumentType) throws MappingException {
-        String value = request.getMethod().getUrl().getArguments().get(argumentType.getSourceRef());
+    private Object createRequestVariable(IHttpRequest request, Argument argument) throws MappingException {
+        String value = request.getMethod().getUrl().getArguments().get(argument.getSourceRef());
         if (value == null)
-            throw new MappingException("argument " + argumentType.getSourceRef() + " not found");
+            throw new MappingException("argument " + argument.getSourceRef() + " not found");
         try {
-            return convertBasicType(value, Class.forName(argumentType.getType()));
+            return convertBasicType(value, Class.forName(argument.getType()));
         } catch (ClassNotFoundException e) {
             logger.error(e.getMessage());
             throw new MappingException("Request-variable must be java.lang.Integer, java.lang.Float or java.lang.String");
@@ -185,17 +155,17 @@ public class RequestMapping extends RequestMappingType {
 
     /**
      * @param request      contains the resource
-     * @param argumentType contains the index of the group to match in resource
+     * @param argument contains the index of the group to match in resource
      * @return object who contains the value
      * @throws MappingException if group not found or bad type
      */
-    private Object createPathVariable(IHttpRequest request, ArgumentType argumentType) throws MappingException {
-        Integer index = pathIndexes.get(argumentType.getSourceRef());
+    private Object createPathVariable(IHttpRequest request, Argument argument) throws MappingException {
+        Integer index = pathIndexes.get(argument.getSourceRef());
         Matcher matcher = Pattern.compile(getResource()).matcher(request.getMethod().getUrl().getResource());
         if (matcher.matches()) {
             String token = matcher.group(index);
             try {
-                return convertBasicType(token, Class.forName(argumentType.getType()));
+                return convertBasicType(token, Class.forName(argument.getType()));
             } catch (ClassNotFoundException e) {
                 logger.error(e.getMessage());
                 throw new MappingException("path-variable must be java.lang.Integer, java.lang.Float or java.lang.String");
@@ -214,9 +184,9 @@ public class RequestMapping extends RequestMappingType {
      */
     @SuppressWarnings("unchecked")
     private Object convertType(String content, Class clazz) throws MappingException {
-        List<String> formats = formatsToStrings(getContentType().getFormat());
-        for (String format : formats) {
-            switch (format) {
+        List<String> contentTypes = getContentType();
+        for (String contentType : contentTypes) {
+            switch (contentType) {
                 case TEXT:
                     try {
                         return convertBasicType(content, clazz);
@@ -323,70 +293,31 @@ public class RequestMapping extends RequestMappingType {
 
         //mapping contentType?
         if (getContentType() != null && request.getHeader().get(CONTENT_TYPE) != null) {
-            List<String> formats = formatsToStrings(getContentType().getFormat());
-            if (!request.getHeader().get(CONTENT_TYPE).stream().anyMatch(formats::contains)) {
+            if (!request.getHeader().get(CONTENT_TYPE).stream().anyMatch(getContentType()::contains)) {
                 return false;
             }
         }
 
         //mapping accept?
         if (getProduceType() != null && request.getHeader().get(ACCEPT) != null) {
-            List<String> formats = formatsToStrings(getProduceType().getFormat());
-            if (!request.getHeader().get(ACCEPT).stream().anyMatch(formats::contains)) {
+            if (!request.getHeader().get(ACCEPT).stream().anyMatch(getProduceType()::contains)) {
                 return false;
             }
         }
         return true;
     }
 
-    private List<String> formatsToStrings(List<FormatType> formatTypes) {
-        return formatTypes.stream().map(FormatType::getValue).collect(Collectors.toList());
-    }
-
-    public static boolean clashingWith(RequestMapping rm1, RequestMapping rm2) {
+    public static boolean clashingWith(RequestMappingExtends rm1, RequestMappingExtends rm2) {
         return rm1.equivalentTo(rm2) || rm2.equivalentTo(rm1);
     }
 
-    private boolean equivalentTo(RequestMapping other) {
-        List<String> contentFormats = formatsToStrings(getContentType().getFormat());
-        List<String> produceFormats = formatsToStrings(getProduceType().getFormat());
+    private boolean equivalentTo(RequestMappingExtends other) {
         return Pattern.compile(getMethod()).matcher(other.getMethod()).matches() &&
                 (Pattern.compile(getResource()).matcher(other.getResource()).matches() || getResource().equals(other.getResource())) && // when both are regex
-                formatsToStrings(other.getContentType().getFormat()).stream().anyMatch(contentFormats::contains) &&
-                formatsToStrings(other.getProduceType().getFormat()).stream().anyMatch(produceFormats::contains);
-
-
+                other.getContentType().stream().anyMatch(getContentType()::contains) &&
+                other.getProduceType().stream().anyMatch(getProduceType()::contains);
     }
 
-    @Override
-    public FormatsType getContentType() {
-        return delegate.getContentType();
-    }
-
-    @Override
-    public void setContentType(FormatsType value) {
-        delegate.setContentType(value);
-    }
-
-    @Override
-    public FormatsType getProduceType() {
-        return delegate.getProduceType();
-    }
-
-    @Override
-    public void setProduceType(FormatsType value) {
-        delegate.setProduceType(value);
-    }
-
-    @Override
-    public ArgumentsType getArguments() {
-        return delegate.getArguments();
-    }
-
-    @Override
-    public void setArguments(ArgumentsType value) {
-        delegate.setArguments(value);
-    }
 
     @Override
     public String getResource() {
@@ -394,8 +325,8 @@ public class RequestMapping extends RequestMappingType {
     }
 
     @Override
-    public void setResource(String value) {
-        delegate.setResource(value);
+    public void setResource(String resource) {
+        delegate.setResource(resource);
     }
 
     @Override
@@ -404,8 +335,8 @@ public class RequestMapping extends RequestMappingType {
     }
 
     @Override
-    public void setMethod(String value) {
-        delegate.setMethod(value);
+    public void setMethod(String method) {
+        delegate.setMethod(method);
     }
 
     @Override
@@ -414,23 +345,42 @@ public class RequestMapping extends RequestMappingType {
     }
 
     @Override
-    public void setCallback(String value) {
-        delegate.setCallback(value);
+    public void setCallback(String callback) {
+        delegate.setCallback(callback);
+    }
+
+    @Override
+    public List<String> getContentType() {
+        return delegate.getContentType();
+    }
+
+    @Override
+    public void setContentType(List<String> contentType) {
+        delegate.setContentType(contentType);
+    }
+
+    @Override
+    public List<String> getProduceType() {
+        return delegate.getProduceType();
+    }
+
+    @Override
+    public void setProduceType(List<String> produceType) {
+        delegate.setProduceType(produceType);
+    }
+
+    @Override
+    public List<Argument> getArguments() {
+        return delegate.getArguments();
+    }
+
+    @Override
+    public void setArguments(List<Argument> arguments) {
+        delegate.setArguments(arguments);
     }
 
     @Override
     public String toString() {
-        return JXBStringUtil.pretty(delegate);
+        return delegate.toString();
     }
-
-    @Override
-    public StringBuilder append(ObjectLocator locator, StringBuilder buffer, ToStringStrategy2 strategy) {
-        return delegate.append(locator, buffer, strategy);
-    }
-
-    @Override
-    public StringBuilder appendFields(ObjectLocator locator, StringBuilder buffer, ToStringStrategy2 strategy) {
-        return delegate.appendFields(locator, buffer, strategy);
-    }
-
 }

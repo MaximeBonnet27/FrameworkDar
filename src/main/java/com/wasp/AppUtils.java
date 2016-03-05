@@ -11,8 +11,10 @@ import javax.xml.bind.*;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.sax.SAXSource;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 
 public class AppUtils {
 
@@ -60,5 +62,16 @@ public class AppUtils {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(json.getBytes(),clazz);
     }
+
+    public <T> T fromJSON(File json,Class<T> clazz) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(json,clazz);
+    }
+
+    public <T> T fromJSON(URL json,Class<T> clazz) throws IOException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.readValue(json,clazz);
+    }
+
 
 }

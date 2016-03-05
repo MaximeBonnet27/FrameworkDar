@@ -1,7 +1,8 @@
 package com.wasp.server.process.router;
 
-import com.wasp.schemas.wasp_conf.ApplicationType;
-import com.wasp.schemas.wasp_conf.WaspConfigType;
+import com.wasp.configuration.wasp_conf.WaspServer;
+//import com.wasp.schemas.wasp_conf.ApplicationType;
+//import com.wasp.schemas.wasp_conf.WaspConfigType;
 import com.wasp.server.process.interfaces.IProcess;
 import com.wasp.server.process.router.exceptions.MappingException;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
@@ -18,9 +19,9 @@ public class Router implements IProcess {
     private HashMap<String, Application> applications;
 
     //TODO change WaspConfigType to WaspConfig
-    public Router(WaspConfigType configuration) {
+    public Router(WaspServer configuration) {
         this.applications = new HashMap<>();
-        for (ApplicationType app : configuration.getWasps().getApplication()) {
+        for (com.wasp.configuration.wasp_conf.Application app : configuration.getApplications()) {
             String context = app.getContext();
             String location = app.getLocation();
             try {
