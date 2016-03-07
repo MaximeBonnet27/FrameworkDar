@@ -19,9 +19,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.UUID;
 
-import static com.wasp.util.httpComponent.common.enums.HttpContentTypes.getAllContentTypes;
-import static com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields.ACCEPT;
-
 public class HttpClient {
     private static final Logger logger = Logger.getLogger(HttpClient.class);
     //to move in a BD with a batch to remove all expired sessions
@@ -41,8 +38,6 @@ public class HttpClient {
     public IHttpRequest getHttpRequest() throws IOException, MethodeTypeException {
         if (request == null)
             this.request = HttpRequestParser.parse(new BufferedReader(new InputStreamReader(socket.getInputStream())));
-        if (this.request.getHeader().get(ACCEPT).contains("*/*"))
-            this.request.getHeader().get(ACCEPT).addAll(getAllContentTypes());
 
         this.request.setHttpSession(getSession());
         return request;

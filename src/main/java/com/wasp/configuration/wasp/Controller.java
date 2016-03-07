@@ -3,6 +3,7 @@ package com.wasp.configuration.wasp;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class Controller {
     private String className;
     private List<RequestMapping> requestMappings;

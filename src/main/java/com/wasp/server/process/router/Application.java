@@ -7,6 +7,7 @@ import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
 import com.wasp.util.httpComponent.response.enums.HttpResponseHeaderFields;
 import com.wasp.util.httpComponent.response.implem.HttpResponseBuilder;
 import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
+import com.wasp.util.waspComponent.views.IView;
 import org.apache.log4j.Logger;
 
 import javax.xml.bind.JAXBException;
@@ -115,6 +116,14 @@ public class Application extends ApplicationJarLoader {
         RequestMappingExtends requestMappingExtends = findRequestMapping(request);
 
         if (requestMappingExtends == null) {
+            String resourceContent = getResourceContent(request.getMethod().getUrl().getResource());
+            if(resourceContent!=null){
+                HttpResponseBuilder responseBuilder = new HttpResponseBuilder().ok(resourceContent);
+                if(request.getHeader().containsKey(ACCEPT)) {
+                    responseBuilder = responseBuilder.header(HttpResponseHeaderFields.CONTENT_TYPE, new ArrayList<>(request.getHeader().get(ACCEPT)).get(0));
+                }
+                return responseBuilder.build();
+            }
             return DefaultResponseFactory.createNotFoundResource(request);
         }
 
@@ -154,7 +163,7 @@ public class Application extends ApplicationJarLoader {
      * @param request who contains the format which the obj will be transformed to
      * @return a IHttpResponse with a content-type who correspond to this obj transformed
      */
-    private IHttpResponse convertToHttpResponse(Object obj, IHttpRequest request) throws JAXBException {
+    private IHttpResponse convertToHttpResponse(Object obj, IHttpRequest request) throws JAXBException, MappingException {
         Set<String> accepted = request.getHeader().get(ACCEPT);
         HttpResponseBuilder builder = new HttpResponseBuilder();
 
@@ -162,6 +171,11 @@ public class Application extends ApplicationJarLoader {
             builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.TEXT);
             builder.ok(obj.toString());
 
+        }else if(accepted.contains(HttpContentTypes.HTML) && obj instanceof IView){
+            IView  view=(IView) obj;
+            builder.header(HttpResponseHeaderFields.CONTENT_TYPE,HttpContentTypes.HTML);
+            initContentView(view);
+            builder.ok(view.evaluate());
         } else if (accepted.contains(HttpContentTypes.JSON)) {
             builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.JSON);
             builder.ok(new AppUtils().toJSON(obj));

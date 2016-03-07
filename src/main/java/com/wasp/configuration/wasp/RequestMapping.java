@@ -5,6 +5,7 @@ import com.wasp.util.httpComponent.common.enums.HttpContentTypes;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class RequestMapping {
 
     private String resource;

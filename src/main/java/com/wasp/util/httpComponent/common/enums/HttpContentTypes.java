@@ -9,9 +9,10 @@ public class HttpContentTypes {
     public static final String HTML= "text/html";
     public static final String XML = "application/xml";
     public static final String QUERY_STRING= "application/x-www-form-urlencoded";
+    public static final String CSS= "text/css";
 
     public static List<String> getAllContentTypes() {
-        return Arrays.asList(TEXT, JSON, HTML, QUERY_STRING, XML);
+        return Arrays.asList(TEXT, JSON, HTML, QUERY_STRING, XML,CSS);
     }
 
 }

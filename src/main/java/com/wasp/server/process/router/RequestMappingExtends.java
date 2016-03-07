@@ -48,7 +48,6 @@ public class RequestMappingExtends extends RequestMapping {
                 this.method = this.controller.getClass().getDeclaredMethod(getCallback());
 
             this.pathIndexes = indexingPathVariable();
-            //generateDefaultValueFormat();
 
             logger.info(this);
         } catch (NoSuchMethodException e) {
@@ -77,13 +76,18 @@ public class RequestMappingExtends extends RequestMapping {
     }
 
     public boolean hasArguments() {
-        return getArguments() != null;
+        return !getArguments().isEmpty();
     }
 
     public Object callback(IHttpRequest request) throws InvocationTargetException, IllegalAccessException, MappingException {
-        return hasArguments() ?
-                this.method.invoke(controller, parseArguments(request)) :
-                this.method.invoke(controller);
+        try {
+            return hasArguments() ?
+                    this.method.invoke(controller, parseArguments(request)) :
+                    this.method.invoke(controller);
+        }catch (InvocationTargetException e){
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     /**

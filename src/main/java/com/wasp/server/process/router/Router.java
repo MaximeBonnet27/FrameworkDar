@@ -1,8 +1,6 @@
 package com.wasp.server.process.router;
 
 import com.wasp.configuration.wasp_conf.WaspServer;
-//import com.wasp.schemas.wasp_conf.ApplicationType;
-//import com.wasp.schemas.wasp_conf.WaspConfigType;
 import com.wasp.server.process.interfaces.IProcess;
 import com.wasp.server.process.router.exceptions.MappingException;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
@@ -11,7 +9,6 @@ import org.apache.log4j.Logger;
 import org.xeustechnologies.jcl.exception.JclException;
 
 import java.util.HashMap;
-
 
 public class Router implements IProcess {
     private static Logger logger = Logger.getLogger(Router.class);

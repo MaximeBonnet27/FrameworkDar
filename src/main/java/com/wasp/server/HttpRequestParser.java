@@ -1,5 +1,6 @@
 package com.wasp.server;
 
+import com.wasp.util.httpComponent.common.enums.HttpContentTypes;
 import com.wasp.util.httpComponent.request.enums.EMethodType;
 import com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields;
 import com.wasp.util.httpComponent.request.exceptions.MethodeTypeException;
@@ -12,6 +13,7 @@ import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
 import java.io.*;
 import java.nio.CharBuffer;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 
 public abstract class HttpRequestParser {
@@ -37,6 +39,13 @@ public abstract class HttpRequestParser {
             //TODO some headerItem need a specifique parser
             if(entries[0].equals("User-Agent"))
                 header.addItems(entries[0], Arrays.asList(entries[1]));
+            if(entries[0].equals("Accept")){
+                List<String> allContentTypes = HttpContentTypes.getAllContentTypes();
+                    for(String contentType: allContentTypes){
+                        if(entries[1].contains(contentType))
+                            header.addItem(entries[0],contentType);
+                    }
+            }
             else
                 header.addItems(entries[0], Arrays.asList(entries[1].split(";")));
         }
