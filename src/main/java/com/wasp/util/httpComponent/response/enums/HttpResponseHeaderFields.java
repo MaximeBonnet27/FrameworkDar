@@ -2,7 +2,6 @@ package com.wasp.util.httpComponent.response.enums;
 
 import java.lang.reflect.Field;
 
-// TODO: 16/02/16 ADD DOC FROM WIKI
 @SuppressWarnings("unused")
 public final class HttpResponseHeaderFields {
 

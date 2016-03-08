@@ -2,7 +2,6 @@ package com.wasp.util.httpComponent.request.enums;
 
 import java.lang.reflect.Field;
 
-// TODO: 16/02/16 ADD DOC FROM WIKI
 @SuppressWarnings("unused")
 public final class HttpRequestHeaderFields {
 
@@ -25,7 +24,6 @@ public final class HttpRequestHeaderFields {
     public static final String CONTENT_TYPE="Content-Type";
     // TODO: 19/02/16 To complete
 
-    // TODO: 16/02/16 Refacto avec ResponseHeaderFields
     public static boolean isDefined(String field) {
         Field[] fields = HttpRequestHeaderFields.class.getDeclaredFields();
         for (Field f : fields) {

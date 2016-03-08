@@ -4,6 +4,7 @@ import com.wasp.AppUtils;
 import com.wasp.configuration.wasp.Argument;
 import com.wasp.configuration.wasp.RequestMapping;
 import com.wasp.server.process.router.exceptions.MappingException;
+import com.wasp.util.httpComponent.request.implem.HttpParameters;
 import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
 import org.apache.log4j.Logger;
 import org.xml.sax.SAXException;
@@ -17,6 +18,7 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -85,7 +87,7 @@ public class RequestMappingExtends extends RequestMapping {
                     this.method.invoke(controller, parseArguments(request)) :
                     this.method.invoke(controller);
         }catch (InvocationTargetException e){
-            e.printStackTrace();
+            logger.error(e.getMessage());
             throw e;
         }
     }
@@ -195,11 +197,10 @@ public class RequestMappingExtends extends RequestMapping {
                     try {
                         return convertBasicType(content, clazz);
                     } catch (Exception e) {
-                        logger.warn(e.getMessage());
+                        logger.debug(e.getMessage());
                     }
                     break;
                 case TEXT_HTML:
-                    //TODO parse to html
                     if (clazz.isAssignableFrom(String.class))
                         return content;
                     break;
@@ -207,7 +208,7 @@ public class RequestMappingExtends extends RequestMapping {
                     try {
                         return new AppUtils().fromJSON(content, clazz);
                     } catch (IOException e) {
-                        logger.warn(e.getMessage());
+                        logger.debug(e.getMessage());
                         break;
                     }
                 case APPLICATION_XML:
@@ -217,13 +218,22 @@ public class RequestMappingExtends extends RequestMapping {
                         try {
                             new AppUtils().loadXML(new ByteArrayInputStream(content.getBytes()), clazz);
                         } catch (JAXBException | ParserConfigurationException | SAXException e) {
-                            logger.warn(e.getMessage());
+                            logger.debug(e.getMessage());
                         }
                     break;
                 case QUERY_STRING:
                     //TODO parse
                     if (clazz.isAssignableFrom(String.class))
                         return content;
+
+                    if(clazz.isAssignableFrom(HashMap.class))
+                        return new HttpParameters(content);
+                    else
+                        try {
+                            return new HttpParameters(content).toClass(clazz);
+                        } catch (IllegalAccessException | InstantiationException e) {
+                            logger.debug(e.getMessage());
+                        }
                     break;
             }
         }
@@ -238,7 +248,7 @@ public class RequestMappingExtends extends RequestMapping {
      */
     private Object convertBasicType(String token, Class clazz) throws MappingException {
         try {
-
+            //TODO Complete
             switch (clazz.getName()) {
                 case "java.lang.Integer":
                     return Integer.parseInt(token);
@@ -291,7 +301,7 @@ public class RequestMappingExtends extends RequestMapping {
         }
 
         //mapping methode?
-        if(getMethods().stream().noneMatch(m -> m.equals(request.getMethod().getMethodType().toString()))){
+        if(getMethods().stream().noneMatch(m -> m.equals(request.getMethod().getMethodType()))){
             return false;
         }
 

@@ -175,7 +175,7 @@ public class Application extends ApplicationJarLoader {
         Set<String> accepted = request.getHeader().get(ACCEPT);
         HttpResponseBuilder builder = new HttpResponseBuilder();
 
-        if (accepted.contains(HttpContentTypes.TEXT_PLAIN)) {
+        if (accepted==null || accepted.contains(HttpContentTypes.TEXT_PLAIN)) {
             builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.TEXT_PLAIN);
             builder.ok(obj.toString());
 

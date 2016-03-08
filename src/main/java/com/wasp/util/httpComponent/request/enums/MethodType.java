@@ -3,7 +3,7 @@ package com.wasp.util.httpComponent.request.enums;
 import java.util.Arrays;
 import java.util.List;
 
-public class MethodType {
+public final class MethodType {
 
     public static final String GET ="GET";
     public static final String HEAD ="HEAD";

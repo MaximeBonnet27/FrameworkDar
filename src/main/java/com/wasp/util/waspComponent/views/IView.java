@@ -3,6 +3,7 @@ package com.wasp.util.waspComponent.views;
 import java.util.HashMap;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public interface IView {
     String getName();
     void setContent(String content);

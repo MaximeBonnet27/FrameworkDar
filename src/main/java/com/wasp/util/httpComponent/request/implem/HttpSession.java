@@ -13,7 +13,6 @@ public final class HttpSession  extends HashMap<String,Object>{
         super();
         this.id = id;
         this.creationDate= ZonedDateTime.now(ZoneId.of("GMT"));
-        //TODO dans fichier de wasp-conf
         expireDate=creationDate.plusDays(30);
     }
 
