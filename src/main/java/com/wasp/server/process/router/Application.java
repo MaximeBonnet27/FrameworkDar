@@ -28,13 +28,22 @@ public class Application extends ApplicationJarLoader {
     public Application(String jarLocation) {
         super(jarLocation);
         this.controllerExtendses = new ArrayList<>();
-        controllerExtendses.addAll(getApplicationConfiguration()
-                .getControllers()
-                .stream()
-                .map(controller -> new ControllerExtends(controller, this))
-                .collect(Collectors.toList()));
+        if (getApplicationConfiguration() != null) {
+            controllerExtendses.addAll(getApplicationConfiguration()
+                    .getControllers()
+                    .stream()
+                    .map(controller -> new ControllerExtends(controller, this))
+                    .collect(Collectors.toList()));
+            checkConflicts();
+            if (hasConflict()) {
+                setLoaded(false);
+            } else {
+                setLoaded(true);
+            }
+        } else {
+            setLoaded(false);
+        }
 
-        checkConflicts();
     }
 
     /**
@@ -67,6 +76,7 @@ public class Application extends ApplicationJarLoader {
 
     /**
      * registe two RequestMapping as conflict
+     *
      * @param rmt1
      * @param rmt2
      */
@@ -81,7 +91,6 @@ public class Application extends ApplicationJarLoader {
     }
 
     /**
-     *
      * @param rmt1
      * @param rmt2
      * @return true if rmt1 and rmt2 are registered as in conflict, else false
@@ -92,7 +101,7 @@ public class Application extends ApplicationJarLoader {
     }
 
 
-    public boolean hasConflict(){
+    public boolean hasConflict() {
         return conflicts.entrySet().stream().anyMatch(e -> !e.getValue().isEmpty());
     }
 
@@ -108,6 +117,7 @@ public class Application extends ApplicationJarLoader {
     /**
      * find the correct callback to the request and return a IHttpResponse
      * with correct content-type
+     *
      * @param request to answer
      * @return a IHttpResponse from the return's callback
      * @throws MappingException if no callback found
@@ -117,9 +127,9 @@ public class Application extends ApplicationJarLoader {
 
         if (requestMappingExtends == null) {
             String resourceContent = getResourceContent(request.getMethod().getUrl().getResource());
-            if(resourceContent!=null){
+            if (resourceContent != null) {
                 HttpResponseBuilder responseBuilder = new HttpResponseBuilder().ok(resourceContent);
-                if(request.getHeader().containsKey(ACCEPT)) {
+                if (request.getHeader().containsKey(ACCEPT)) {
                     responseBuilder = responseBuilder.header(HttpResponseHeaderFields.CONTENT_TYPE, new ArrayList<>(request.getHeader().get(ACCEPT)).get(0));
                 }
                 return responseBuilder.build();
@@ -136,13 +146,12 @@ public class Application extends ApplicationJarLoader {
             return convertToHttpResponse(result, request);
         } catch (InvocationTargetException | IllegalAccessException | JAXBException e) {
             logger.error(e.getMessage());
-            return DefaultResponseFactory.createResponseInternalError(e,request);
+            return DefaultResponseFactory.createResponseInternalError(e, request);
         }
 
     }
 
     /**
-     *
      * @param request to mapping
      * @return the correct RequestMapping for this request
      */
@@ -158,8 +167,7 @@ public class Application extends ApplicationJarLoader {
     //TODO completed
 
     /**
-     *
-     * @param obj to tranform in the correct format
+     * @param obj     to tranform in the correct format
      * @param request who contains the format which the obj will be transformed to
      * @return a IHttpResponse with a content-type who correspond to this obj transformed
      */
@@ -167,21 +175,21 @@ public class Application extends ApplicationJarLoader {
         Set<String> accepted = request.getHeader().get(ACCEPT);
         HttpResponseBuilder builder = new HttpResponseBuilder();
 
-        if (accepted.contains(HttpContentTypes.TEXT)) {
-            builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.TEXT);
+        if (accepted.contains(HttpContentTypes.TEXT_PLAIN)) {
+            builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.TEXT_PLAIN);
             builder.ok(obj.toString());
 
-        }else if(accepted.contains(HttpContentTypes.HTML) && obj instanceof IView){
-            IView  view=(IView) obj;
-            builder.header(HttpResponseHeaderFields.CONTENT_TYPE,HttpContentTypes.HTML);
+        } else if (accepted.contains(HttpContentTypes.TEXT_HTML) && obj instanceof IView) {
+            IView view = (IView) obj;
+            builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.TEXT_HTML);
             initContentView(view);
             builder.ok(view.evaluate());
-        } else if (accepted.contains(HttpContentTypes.JSON)) {
-            builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.JSON);
+        } else if (accepted.contains(HttpContentTypes.APPLICATION_JSON)) {
+            builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.APPLICATION_JSON);
             builder.ok(new AppUtils().toJSON(obj));
 
-        } else if (accepted.contains(HttpContentTypes.XML)) {
-            builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.XML);
+        } else if (accepted.contains(HttpContentTypes.APPLICATION_XML)) {
+            builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.APPLICATION_XML);
             builder.ok(new AppUtils().toXml(obj));
         } else {
             builder.noContent();

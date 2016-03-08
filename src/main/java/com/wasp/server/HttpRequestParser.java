@@ -1,7 +1,6 @@
 package com.wasp.server;
 
 import com.wasp.util.httpComponent.common.enums.HttpContentTypes;
-import com.wasp.util.httpComponent.request.enums.EMethodType;
 import com.wasp.util.httpComponent.request.enums.HttpRequestHeaderFields;
 import com.wasp.util.httpComponent.request.exceptions.MethodeTypeException;
 import com.wasp.util.httpComponent.request.implem.HttpRequest;
@@ -25,7 +24,7 @@ public abstract class HttpRequestParser {
         //Parse first line protocol
         IMethod method = request.getMethod();
         String[] protocolTokens = br.readLine().split(" ");
-        method.setMethodType(EMethodType.getMethod(protocolTokens[0]));
+        method.setMethodType(protocolTokens[0]);
         method.setUrl(new Url(protocolTokens[1]));
         method.setProtocol(protocolTokens[2]);
 

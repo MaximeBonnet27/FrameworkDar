@@ -2,6 +2,7 @@ package com.wasp.configuration.wasp_conf;
 
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class WaspServer {
     private int port;
     private List<Application> applications;

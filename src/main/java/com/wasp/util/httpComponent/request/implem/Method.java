@@ -1,12 +1,11 @@
 package com.wasp.util.httpComponent.request.implem;
 
-import com.wasp.util.httpComponent.request.enums.EMethodType;
 import com.wasp.util.httpComponent.request.interfaces.IMethod;
 import com.wasp.util.httpComponent.request.interfaces.IUrl;
 
 public class Method implements IMethod {
 
-    private EMethodType methodType;
+    private String methodType;
     private IUrl url;
     private String protocol;
 
@@ -14,12 +13,12 @@ public class Method implements IMethod {
     }
 
     @Override
-    public EMethodType getMethodType() {
+    public String getMethodType() {
         return methodType;
     }
 
     @Override
-    public void setMethodType(EMethodType methodType) {
+    public void setMethodType(String methodType) {
         this.methodType = methodType;
     }
 

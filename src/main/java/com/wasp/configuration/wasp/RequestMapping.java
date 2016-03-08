@@ -1,6 +1,7 @@
 package com.wasp.configuration.wasp;
 
 import com.wasp.util.httpComponent.common.enums.HttpContentTypes;
+import com.wasp.util.httpComponent.request.enums.MethodType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public class RequestMapping {
 
     private String resource;
-    private String method;
+    private List<String> methods;
     private String callback;
     private List<String> contentType;
     private List<String> produceType;
@@ -18,9 +19,9 @@ public class RequestMapping {
     public RequestMapping() {
     }
 
-    public RequestMapping(String resource, String method, String callback, List<String> contentType, List<String> produceType, List<Argument> arguments) {
+    public RequestMapping(String resource, List<String> methods, String callback, List<String> contentType, List<String> produceType, List<Argument> arguments) {
         this.resource = resource;
-        this.method = method;
+        this.methods = methods;
         this.callback = callback;
         this.contentType = contentType;
         this.produceType = produceType;
@@ -35,12 +36,14 @@ public class RequestMapping {
         this.resource = resource;
     }
 
-    public String getMethod() {
-        return method;
+    public List<String> getMethods() {
+        if(this.methods ==null)
+            this.methods = MethodType.getAllMethodeType();
+        return methods;
     }
 
-    public void setMethod(String method) {
-        this.method = method;
+    public void setMethods(List<String> methods) {
+        this.methods = methods;
     }
 
     public String getCallback() {
@@ -85,7 +88,7 @@ public class RequestMapping {
     public String toString() {
         return "RequestMapping{" +
                 "resource='" + resource + '\'' +
-                ", method='" + method + '\'' +
+                ", methods='" + methods + '\'' +
                 ", callback='" + callback + '\'' +
                 ", contentType=" + getContentType() +
                 ", produceType=" + getProduceType() +

@@ -77,7 +77,6 @@ public class ViewModel implements IView {
                     dollar = false;
                     chevron = false;
                     try {
-                        System.out.println(expression);
                         result.append(valueOfExpression(expression.toString()));
                     } catch (IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                         e.printStackTrace();

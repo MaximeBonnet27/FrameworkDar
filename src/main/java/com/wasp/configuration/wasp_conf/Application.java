@@ -1,5 +1,6 @@
 package com.wasp.configuration.wasp_conf;
 
+@SuppressWarnings("unused")
 public class Application {
     private String context;
     private String location;

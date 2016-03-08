@@ -34,20 +34,20 @@ public class ProcessEcho implements IProcess {
     }
 
     public String selectContentType(Set<String> contentTypes) {
-        if (contentTypes.contains(HttpContentTypes.HTML))
-            return HttpContentTypes.HTML;
-        if (contentTypes.contains(HttpContentTypes.JSON))
-            return HttpContentTypes.JSON;
-        return HttpContentTypes.TEXT;
+        if (contentTypes.contains(HttpContentTypes.TEXT_HTML))
+            return HttpContentTypes.TEXT_HTML;
+        if (contentTypes.contains(HttpContentTypes.APPLICATION_JSON))
+            return HttpContentTypes.APPLICATION_JSON;
+        return HttpContentTypes.TEXT_PLAIN;
     }
 
     public String buildContent(String contentType, IHttpRequest request) {
         switch (contentType) {
-            case HttpContentTypes.TEXT:
+            case HttpContentTypes.TEXT_PLAIN:
                 return buildContentPlain(request);
-            case HttpContentTypes.HTML:
+            case HttpContentTypes.TEXT_HTML:
                 return buildContentHTML(request);
-            case HttpContentTypes.JSON:
+            case HttpContentTypes.APPLICATION_JSON:
                 return buildContentJSON(request);
             default:
                 return "";

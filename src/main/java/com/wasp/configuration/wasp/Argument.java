@@ -1,5 +1,6 @@
 package com.wasp.configuration.wasp;
 
+@SuppressWarnings("unused")
 public class Argument {
     private String sourceType;
     private String sourceRef;

@@ -15,7 +15,6 @@ public class Router implements IProcess {
 
     private HashMap<String, Application> applications;
 
-    //TODO change WaspConfigType to WaspConfig
     public Router(WaspServer configuration) {
         this.applications = new HashMap<>();
         for (com.wasp.configuration.wasp_conf.Application app : configuration.getApplications()) {
@@ -23,14 +22,8 @@ public class Router implements IProcess {
             String location = app.getLocation();
             try {
                 Application application = new Application(location);
-
-                if (application.hasConflict())
-                    application.setLoaded(false);
-                else {
-                    application.setLoaded(true);
+                if(application.isLoaded()){
                     applications.put(context, application);
-                }
-                if (application.isLoaded()) {
                     logger.info("Application for context: " + context + " loaded");
                     logger.info("context " + context + " redirect to " + app.getLocation());
                 } else {

@@ -191,26 +191,26 @@ public class RequestMappingExtends extends RequestMapping {
         List<String> contentTypes = getContentType();
         for (String contentType : contentTypes) {
             switch (contentType) {
-                case TEXT:
+                case TEXT_PLAIN:
                     try {
                         return convertBasicType(content, clazz);
                     } catch (Exception e) {
                         logger.warn(e.getMessage());
                     }
                     break;
-                case HTML:
+                case TEXT_HTML:
                     //TODO parse to html
                     if (clazz.isAssignableFrom(String.class))
                         return content;
                     break;
-                case JSON:
+                case APPLICATION_JSON:
                     try {
                         return new AppUtils().fromJSON(content, clazz);
                     } catch (IOException e) {
                         logger.warn(e.getMessage());
                         break;
                     }
-                case XML:
+                case APPLICATION_XML:
                     if (clazz.isAssignableFrom(String.class))
                         return content;
                     else
@@ -291,20 +291,20 @@ public class RequestMappingExtends extends RequestMapping {
         }
 
         //mapping methode?
-        if (!Pattern.compile(getMethod()).matcher(request.getMethod().getMethodType().toString()).matches()) {
+        if(getMethods().stream().noneMatch(m -> m.equals(request.getMethod().getMethodType().toString()))){
             return false;
         }
 
         //mapping contentType?
-        if (getContentType() != null && request.getHeader().get(CONTENT_TYPE) != null) {
-            if (!request.getHeader().get(CONTENT_TYPE).stream().anyMatch(getContentType()::contains)) {
+        if (request.getHeader().get(CONTENT_TYPE) != null) {
+            if (request.getHeader().get(CONTENT_TYPE).stream().noneMatch(getContentType()::contains)) {
                 return false;
             }
         }
 
         //mapping accept?
-        if (getProduceType() != null && request.getHeader().get(ACCEPT) != null) {
-            if (!request.getHeader().get(ACCEPT).stream().anyMatch(getProduceType()::contains)) {
+        if (request.getHeader().get(ACCEPT) != null) {
+            if (request.getHeader().get(ACCEPT).stream().noneMatch(getProduceType()::contains)) {
                 return false;
             }
         }
@@ -316,7 +316,8 @@ public class RequestMappingExtends extends RequestMapping {
     }
 
     private boolean equivalentTo(RequestMappingExtends other) {
-        return Pattern.compile(getMethod()).matcher(other.getMethod()).matches() &&
+        return //Pattern.compile(getMethods()).matcher(other.getMethods()).matches() &&
+                other.getMethods().stream().anyMatch(getMethods()::contains) &&
                 (Pattern.compile(getResource()).matcher(other.getResource()).matches() || getResource().equals(other.getResource())) && // when both are regex
                 other.getContentType().stream().anyMatch(getContentType()::contains) &&
                 other.getProduceType().stream().anyMatch(getProduceType()::contains);
@@ -334,13 +335,13 @@ public class RequestMappingExtends extends RequestMapping {
     }
 
     @Override
-    public String getMethod() {
-        return delegate.getMethod();
+    public List<String> getMethods() {
+        return delegate.getMethods();
     }
 
     @Override
-    public void setMethod(String method) {
-        delegate.setMethod(method);
+    public void setMethods(List<String> method) {
+        delegate.setMethods(method);
     }
 
     @Override
