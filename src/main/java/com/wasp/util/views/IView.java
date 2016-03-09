@@ -1,4 +1,4 @@
-package com.wasp.util.waspComponent.views;
+package com.wasp.util.views;
 
 import java.util.HashMap;
 import java.util.List;

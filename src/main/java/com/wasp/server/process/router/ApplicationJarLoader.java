@@ -5,7 +5,7 @@ import com.wasp.configuration.wasp.ViewMapping;
 import com.wasp.configuration.wasp.Wasp;
 import com.wasp.configuration.wasp.WaspConfig;
 import com.wasp.server.process.router.exceptions.MappingException;
-import com.wasp.util.waspComponent.views.IView;
+import com.wasp.util.views.IView;
 import org.apache.log4j.Logger;
 import org.xeustechnologies.jcl.JarClassLoader;
 import org.xeustechnologies.jcl.JclObjectFactory;

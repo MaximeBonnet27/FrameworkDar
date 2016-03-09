@@ -23,7 +23,8 @@ public class HttpParameters extends HashMap<String, String> {
             String[] args = value.split("&");
             for (String s : args) {
                 String[] kv = s.split("=");
-                put(kv[0], kv[1]);
+                if(kv.length==2)
+                    put(kv[0], kv[1]);
             }
         }
     }

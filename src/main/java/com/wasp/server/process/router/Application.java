@@ -7,7 +7,7 @@ import com.wasp.util.httpComponent.request.interfaces.IHttpRequest;
 import com.wasp.util.httpComponent.response.enums.HttpResponseHeaderFields;
 import com.wasp.util.httpComponent.response.implem.HttpResponseBuilder;
 import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
-import com.wasp.util.waspComponent.views.IView;
+import com.wasp.util.views.IView;
 import org.apache.log4j.Logger;
 
 import javax.xml.bind.JAXBException;

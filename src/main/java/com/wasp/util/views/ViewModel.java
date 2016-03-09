@@ -1,4 +1,4 @@
-package com.wasp.util.waspComponent.views;
+package com.wasp.util.views;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
