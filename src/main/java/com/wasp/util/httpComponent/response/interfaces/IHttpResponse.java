@@ -25,4 +25,7 @@ public interface IHttpResponse {
     List<HttpCookie> getCookies();
     void setCookie(HttpCookie cookie);
 
+    Object getEntity();
+    void setEntity(Object o);
+
 }

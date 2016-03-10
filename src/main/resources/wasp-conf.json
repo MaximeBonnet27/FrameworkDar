@@ -5,6 +5,11 @@
         "context": "/points",
         "location": "/Users/jordhanleoture/Documents/workspaceIntelli/PointProject/target/PointProject-1.0-SNAPSHOT.jar",
         "description": "gestionnaire de points"
+      },
+      {
+        "context":"/contact_wasp",
+        "location":"/Users/jordhanleoture/git/contact_wasp/target/contact-1.0-SNAPSHOT.jar",
+        "description": "gestionnaire de contacts"
       }
     ]
 }

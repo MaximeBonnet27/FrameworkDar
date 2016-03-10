@@ -141,9 +141,15 @@ public class Application extends ApplicationJarLoader {
             Object result = requestMappingExtends.callback(request);
             if (result == null)
                 return new HttpResponseBuilder().noContent().build();
-            if (result.getClass().isAssignableFrom(IHttpResponse.class))
-                return (IHttpResponse) result;
-            return convertToHttpResponse(result, request);
+            IHttpResponse response;
+            if (!(result instanceof IHttpResponse)) {
+                response = new HttpResponseBuilder().setEntity(result).build();
+            } else {
+                response = (IHttpResponse) result;
+            }
+            adaptResponse(response, request);
+            return response;
+
         } catch (InvocationTargetException | IllegalAccessException | JAXBException e) {
             logger.error(e.getMessage());
             return DefaultResponseFactory.createResponseInternalError(e, request);
@@ -167,15 +173,15 @@ public class Application extends ApplicationJarLoader {
     //TODO completed
 
     /**
-     * @param obj     to tranform in the correct format
      * @param request who contains the format which the obj will be transformed to
      * @return a IHttpResponse with a content-type who correspond to this obj transformed
      */
-    private IHttpResponse convertToHttpResponse(Object obj, IHttpRequest request) throws JAXBException, MappingException {
+    private void adaptResponse(IHttpResponse response, IHttpRequest request) throws JAXBException, MappingException {
         Set<String> accepted = request.getHeader().get(ACCEPT);
-        HttpResponseBuilder builder = new HttpResponseBuilder();
+        HttpResponseBuilder builder = new HttpResponseBuilder(response);
 
-        if (accepted==null || accepted.contains(HttpContentTypes.TEXT_PLAIN)) {
+        Object obj = response.getContent() == null ? response.getEntity(): response.getContent();
+        if (accepted == null || accepted.contains(HttpContentTypes.TEXT_PLAIN)) {
             builder.header(HttpResponseHeaderFields.CONTENT_TYPE, HttpContentTypes.TEXT_PLAIN);
             builder.ok(obj.toString());
 
@@ -194,7 +200,6 @@ public class Application extends ApplicationJarLoader {
         } else {
             builder.noContent();
         }
-        return builder.build();
     }
 
 }

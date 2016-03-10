@@ -15,6 +15,10 @@ public class HttpResponseBuilder {
         response = new HttpResponse();
     }
 
+    public HttpResponseBuilder(IHttpResponse response) {
+        this.response = response;
+    }
+
     public HttpResponseBuilder protocol(String protocol){
         response.setProtocol(protocol);
         return this;
@@ -55,6 +59,11 @@ public class HttpResponseBuilder {
 
     public HttpResponseBuilder setCookie(HttpCookie cookie){
         response.setCookie(cookie);
+        return this;
+    }
+
+    public HttpResponseBuilder setEntity(Object o){
+        response.setEntity(o);
         return this;
     }
     public IHttpResponse build(){

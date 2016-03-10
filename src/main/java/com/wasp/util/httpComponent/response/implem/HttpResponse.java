@@ -11,6 +11,7 @@ public class HttpResponse implements IHttpResponse {
     private EStatus status;
     private HttpResponseHeader header;
     private String content;
+    private Object entity;
 
     public HttpResponse() {
         header = new HttpResponseHeader();
@@ -64,6 +65,16 @@ public class HttpResponse implements IHttpResponse {
     @Override
     public void setCookie(HttpCookie cookie) {
         getHeader().addCookie(cookie);
+    }
+
+    @Override
+    public Object getEntity() {
+        return this.entity;
+    }
+
+    @Override
+    public void setEntity(Object o) {
+        this.entity=o;
     }
 
     @Override
