@@ -37,7 +37,7 @@ public abstract class DefaultResponseFactory {
 
     public static IHttpResponse createNotFoundResource(IHttpRequest request){
         IUrl url = request.getMethod().getUrl();
-        return create(NOT_FOUND, url.toString()," Resource "+url.getResource()+" not found",null);
+        return create(NOT_FOUND, url.toString()," Resource "+url.getResource()+" not found with method "+request.getMethod().getMethodType(),null);
     }
     public static IHttpResponse createResponseBadRequestException(MappingException exception, IHttpRequest request) {
         StringWriter stack = new StringWriter();
