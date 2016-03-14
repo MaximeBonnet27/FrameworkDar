@@ -47,15 +47,15 @@ public class AppUtils {
     }
 
     public String toJSON(Object o){
-        String ressult="{}";
+        String result="{}";
 
         ObjectMapper mapper = new ObjectMapper();
         try {
-            ressult=mapper.writeValueAsString(o);
+            result=mapper.writeValueAsString(o);
         } catch (IOException e) {
             logger.warn(e.getMessage());
         }
-        return ressult;
+        return result;
     }
 
     public <T> T fromJSON(String json,Class<T> clazz) throws IOException {

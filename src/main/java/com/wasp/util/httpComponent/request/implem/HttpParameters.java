@@ -24,10 +24,26 @@ public class HttpParameters extends HashMap<String, String> {
             for (String s : args) {
                 String[] kv = s.split("=");
                 if(kv.length==2)
-                    put(kv[0], kv[1]);
+                    put(kv[0], normalize(kv[1]));
             }
         }
     }
+
+    private String normalize(String string) {
+        StringBuilder builder = new StringBuilder();
+        char[] chars = string.toCharArray();
+        for(int i=0; i<chars.length;i++){
+            if(chars[i]=='+'){
+                builder.append(" ");
+            }else {
+                if (chars[i] == '\\')
+                    i++;
+                builder.append(chars[i]);
+            }
+        }
+        return builder.toString();
+    }
+
 
     public <T> T toClass(Class<T> clazz) throws IllegalAccessException, InstantiationException {
         T instance = clazz.newInstance();

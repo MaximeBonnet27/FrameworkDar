@@ -72,7 +72,7 @@ public class HttpClient {
             response.setProtocol(request.getMethod().getProtocol());
             int content_length = 0;
             if (response.getContent() != null)
-                content_length = response.getContent().length();
+                content_length = response.getContent().length()+2;
             response.getHeader().addItem(HttpResponseHeaderFields.CONTENT_LENGTH, String.valueOf(content_length));
             response.getHeader().addItem(HttpResponseHeaderFields.DATE, getHttpDate());
 
@@ -88,7 +88,7 @@ public class HttpClient {
             bos.write(response.toString().getBytes());
             bos.flush();
             bos.close();
-            //logger.info("send "+response);
+            logger.info("send "+response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

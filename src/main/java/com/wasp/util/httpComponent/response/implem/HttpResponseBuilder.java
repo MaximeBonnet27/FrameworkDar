@@ -6,6 +6,9 @@ import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
 
 import java.util.List;
 
+import static com.wasp.util.httpComponent.response.enums.EStatus.PERMANENT_REDIRECT;
+import static com.wasp.util.httpComponent.response.enums.HttpResponseHeaderFields.LOCATION;
+
 @SuppressWarnings("unused")
 public class HttpResponseBuilder {
 
@@ -66,6 +69,11 @@ public class HttpResponseBuilder {
         response.setEntity(o);
         return this;
     }
+
+    public HttpResponseBuilder redirect(String to){
+        return status(PERMANENT_REDIRECT).header(LOCATION, to);
+    }
+
     public IHttpResponse build(){
         return response;
     }

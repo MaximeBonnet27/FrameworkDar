@@ -33,7 +33,7 @@ public abstract class HttpHeader extends HashMap<String, Set<String>> implements
         for(Entry<String,Set<String>> entry:entrySet()){
             sb.append(entry.getKey()).append(": ");
             for(String value:entry.getValue()) {
-                sb.append(value).append("; ");
+                sb.append(value).append(" ");
             }
             sb.append("\n");
         }
