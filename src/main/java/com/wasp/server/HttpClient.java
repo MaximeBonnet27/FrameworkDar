@@ -8,10 +8,10 @@ import com.wasp.util.httpComponent.response.implem.HttpCookie;
 import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
 import org.apache.log4j.Logger;
 
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -72,7 +72,7 @@ public class HttpClient {
             response.setProtocol(request.getMethod().getProtocol());
             int content_length = 0;
             if (response.getContent() != null)
-                content_length = response.getContent().length()+2;
+                content_length=response.getContent().length;
             response.getHeader().addItem(HttpResponseHeaderFields.CONTENT_LENGTH, String.valueOf(content_length));
             response.getHeader().addItem(HttpResponseHeaderFields.DATE, getHttpDate());
 
@@ -84,11 +84,10 @@ public class HttpClient {
             //todo ajouter dans entete
         }
         try {
-            BufferedOutputStream bos = new BufferedOutputStream(socket.getOutputStream());
-            bos.write(response.toString().getBytes());
+            OutputStream bos = socket.getOutputStream();
+            bos.write(response.toByte());
             bos.flush();
             bos.close();
-            logger.info("send "+response);
         } catch (IOException e) {
             logger.error(e.getMessage());
         }

@@ -19,7 +19,7 @@ public interface IHttpResponse {
     HttpResponseHeader getHeader();
     void setHeader(HttpResponseHeader header);
 
-    String getContent();
+    byte[] getContent();
     void setContent(String content);
 
     List<HttpCookie> getCookies();
@@ -28,4 +28,7 @@ public interface IHttpResponse {
     Object getEntity();
     void setEntity(Object o);
 
+    void setContent(byte[] content);
+
+    byte[] toByte();
 }

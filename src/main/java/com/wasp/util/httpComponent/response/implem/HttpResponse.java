@@ -10,7 +10,7 @@ public class HttpResponse implements IHttpResponse {
     private String protocol;
     private EStatus status;
     private HttpResponseHeader header;
-    private String content;
+    private byte[] content;
     private Object entity;
 
     public HttpResponse() {
@@ -48,13 +48,13 @@ public class HttpResponse implements IHttpResponse {
     }
 
     @Override
-    public String getContent() {
+    public byte[] getContent() {
         return content;
     }
 
     @Override
     public void setContent(String content) {
-        this.content = content;
+        this.content = content.getBytes();
     }
 
     @Override
@@ -78,10 +78,37 @@ public class HttpResponse implements IHttpResponse {
     }
 
     @Override
+    public void setContent(byte[] content) {
+        this.content=content;
+    }
+
+    @Override
+    public byte[] toByte() {
+         byte[] firstBytes=(protocol + " " + status + "\r\n"
+                 + header).getBytes();
+
+        int contentLength=0;
+        if(content!=null)
+            contentLength=content.length;
+        byte[] bytes = new byte[firstBytes.length + contentLength];
+
+        int currentIndex=0;
+        for(int i=0;i<firstBytes.length;i++){
+            bytes[currentIndex]=firstBytes[i];
+            currentIndex++;
+        }
+        for(int i=0;i<contentLength;i++){
+            bytes[currentIndex]=content[i];
+            currentIndex++;
+        }
+        return bytes;
+    }
+
+    @Override
     public String toString() {
         return protocol + " " + status + "\r\n"
-                + header// Le dernier header contient déjà le retour à la ligne
-                + "\r\n" // Saut de ligne entre header et content
-                + content;
+                + header;// Le dernier header contient déjà le retour à la ligne
     }
+
+
 }

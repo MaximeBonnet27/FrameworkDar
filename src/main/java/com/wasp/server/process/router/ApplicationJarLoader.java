@@ -13,7 +13,10 @@ import org.xeustechnologies.jcl.JclObjectFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class ApplicationJarLoader {
@@ -30,7 +33,7 @@ public class ApplicationJarLoader {
 
         try {
             this.jcl.add(new FileInputStream(jarLocation));
-            url = new URL("jar:file:" + jarLocation + "!/wasp.json");
+            url = new URL("jar:file:" + jarLocation + "!/WASP-INF/wasp.json");
         } catch (IOException e) {
             logger.error(e.getMessage());
         }
@@ -75,7 +78,7 @@ public class ApplicationJarLoader {
         if (viewMapping != null)
             name = viewMapping.getPrefix() + name + viewMapping.getSuffix();
         final String finalName = "/WASP-INF/" + name;
-        view.setContent(getResourceContent(finalName));
+        view.setContent(new String(getResourceContent(finalName)));
 
         List<IView> collect = view.getTemplates().values().stream().flatMap(Collection::stream).collect(Collectors.toList());
         for(IView v:collect){
@@ -84,18 +87,19 @@ public class ApplicationJarLoader {
 
     }
 
-    public String getResourceContent(String path) throws MappingException {
+    public byte[] getResourceContent(String path) throws MappingException {
         if (path.matches("^/WASP-INF/.+")) {
             path = path.replaceFirst("^/", "");
             final String finalPath = path;
             try {
-                return new String(jcl.getLoadedResources()
-                    .entrySet()
-                    .stream()
-                    .filter(e -> e.getKey().equals(finalPath))
-                    .findFirst()
-                    .get()
-                    .getValue());
+                byte[] bytes = jcl.getLoadedResources()
+                        .entrySet()
+                        .stream()
+                        .filter(e -> e.getKey().equals(finalPath))
+                        .findFirst()
+                        .get()
+                        .getValue();
+                return bytes;
             } catch (NoSuchElementException e) {
                 throw new MappingException("resource " + finalPath + " does not existe");
             }

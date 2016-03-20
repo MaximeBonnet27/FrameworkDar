@@ -126,12 +126,13 @@ public class Application extends ApplicationJarLoader {
         RequestMappingExtends requestMappingExtends = findRequestMapping(request);
 
         if (requestMappingExtends == null) {
-            String resourceContent = getResourceContent(request.getMethod().getUrl().getResource());
+            byte[] resourceContent = getResourceContent(request.getMethod().getUrl().getResource());
             if (resourceContent != null) {
                 HttpResponseBuilder responseBuilder = new HttpResponseBuilder().ok(resourceContent);
                 if (request.getHeader().containsKey(ACCEPT)) {
                     responseBuilder = responseBuilder.header(HttpResponseHeaderFields.CONTENT_TYPE, new ArrayList<>(request.getHeader().get(ACCEPT)).get(0));
                 }
+                responseBuilder = responseBuilder.header(HttpResponseHeaderFields.CONTENT_TYPE,HttpContentTypes.IMAGE_PNG);
                 return responseBuilder.build();
             }
             return DefaultResponseFactory.createNotFoundResource(request);

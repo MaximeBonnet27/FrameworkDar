@@ -6,7 +6,7 @@ import com.wasp.util.httpComponent.response.interfaces.IHttpResponse;
 
 import java.util.List;
 
-import static com.wasp.util.httpComponent.response.enums.EStatus.PERMANENT_REDIRECT;
+import static com.wasp.util.httpComponent.response.enums.EStatus.*;
 import static com.wasp.util.httpComponent.response.enums.HttpResponseHeaderFields.LOCATION;
 
 @SuppressWarnings("unused")
@@ -33,16 +33,16 @@ public class HttpResponseBuilder {
     }
 
     public HttpResponseBuilder status(int code) throws StatusException {
-        response.setStatus(EStatus.getStatus(code));
+        response.setStatus(getStatus(code));
         return this;
     }
 
     public HttpResponseBuilder noContent(){
-        return status(EStatus.NO_CONTENT).content("");
+        return status(NO_CONTENT).content("");
     }
 
     public HttpResponseBuilder ok(String content){
-        return status(EStatus.OK).content(content);
+        return ok(content.getBytes());
     }
 
     public HttpResponseBuilder header(String field, String value) {
@@ -56,8 +56,7 @@ public class HttpResponseBuilder {
     }
 
     public HttpResponseBuilder content(String content){
-        response.setContent(content);
-        return this;
+        return content(content.getBytes());
     }
 
     public HttpResponseBuilder setCookie(HttpCookie cookie){
@@ -77,4 +76,14 @@ public class HttpResponseBuilder {
     public IHttpResponse build(){
         return response;
     }
+
+    public HttpResponseBuilder ok(byte[] content) {
+        return status(OK).content(content);
+    }
+
+    private HttpResponseBuilder content(byte[] content) {
+        response.setContent(content);
+        return this;
+    }
+
 }
