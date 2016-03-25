@@ -5,6 +5,9 @@ Build & run
 - build : mvn package
 - run: java -jar wasp-1.0-SNAPSHOT-jar-with-dependencies.jar /path/to/wasp-conf.json
 
+WARNING: if you want to test directly the project after a pull from git. Here's what you have to do:
+- mvn install in WASP directory and mvn package for each example.
+- indicate the absolute location of jar of exemples in wasp-conf.json file
 WASP server configuration
 -------
 To run WASP-server you need to passe a json file like the following exemple.

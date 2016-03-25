@@ -1,0 +1,41 @@
+{
+  "controllers": [
+    {"className": "stl.upmc.com.controller.PointController", "requestMappings":
+    [
+        {"resource": "/list", "methods": ["GET"], "callback": "list",
+          "produceType": ["application/json","text/plain"]
+        },
+
+        {"resource": "/p/(id)/x", "methods": ["GET"], "callback": "getX",
+          "produceType": ["application/json","text/plain"],
+          "arguments": [{"sourceType": "path-variable", "sourceRef": "id", "type": "java.lang.Integer"}]
+        },
+
+        {"resource": "/p/(id)/y", "methods": ["GET"], "callback": "getY",
+          "produceType": ["application/json","text/plain"],
+          "arguments": [{"sourceType": "path-variable", "sourceRef": "id", "type": "java.lang.Integer"}]
+        },
+
+        {"resource": "/p/(id)", "methods": ["PUT"], "callback": "update",
+          "arguments": [
+            {"sourceType": "path-variable", "sourceRef": "id", "type": "java.lang.Integer"},
+            {"sourceType": "request-variable", "sourceRef": "x", "type": "java.lang.Integer"},
+            {"sourceType": "request-variable", "sourceRef": "y", "type": "java.lang.Integer"}
+          ]
+        },
+
+        {"resource": "/p", "methods": ["POST"], "callback": "addPoint",
+          "contentType": ["application/json","application/x-www-form-urlencoded"],
+          "produceType": ["application/json","text/plain"],
+          "arguments": [
+            {"sourceType": "request-body", "type": "stl.upmc.com.model.Point"}
+          ]
+        },
+
+      {"resource": "/p/(id)", "methods": ["DELETE"], "callback": "removePoint",
+        "arguments": [{"sourceType": "path-variable", "sourceRef": "id", "type": "java.lang.Integer"}]
+      }
+      ]
+    }
+  ]
+}

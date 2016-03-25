@@ -3,12 +3,12 @@
     "applications": [
       {
         "context":"/todo_wasp",
-        "location":"/Users/jordhanleoture/git/todo_wasp/target/todo_wasp-1.0-SNAPSHOT.jar",
+        "location":"/ABSOLUTE PATH TO/WASP/exemples/todo_wasp/target/todo_wasp-1.0-SNAPSHOT.jar",
         "description":"gestionnaire de tache"
       },
       {
         "context":"/points",
-        "location":"/Users/jordhanleoture/Documents/workspaceIntelli/PointProject/target/PointProject-1.0-SNAPSHOT.jar",
+        "location":"/ABSOLUTE PATH TO/WASP/exemples/PointProject/target/PointProject-1.0-SNAPSHOT.jar",
         "description":"gestionnaire de point"
       }
     ]

@@ -1,0 +1,9 @@
+<li id="${todo.id}" class="${validate}">
+    <div class="todoItem">
+        <div class="todo">
+            <input class="check" type="checkbox" onClick='validate("${todo.id}")' ${checked}>
+            <label>${todo.content}</label>
+        </div>
+        <button class="deleter" onClick='removeTodo("${todo.id}")'>X</button>
+    </div>
+</li>

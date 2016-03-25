@@ -1,0 +1,21 @@
+<html>
+${head}
+<body>
+<div id="header">
+    <p> ${pseudo} <a href="logout">Deconnexion</a></p>
+</div>
+<div id="content">
+    <h1 id="title"><img id="logo" src="WASP-INF/img/logo.png"/>Todos</h1>
+    <form id="todo-form" onsubmit="return newTodo();">
+        <input type="hidden" id="pseudo" value="${pseudo}">
+        <input class="inputForm" id="new-todo" placeholder="Ajouter un truc a faire" autofocus="">
+    </form>
+</div>
+<div id="mainlist">
+    <ul id="todolist">
+        ${todo}
+    </ul>
+</div>
+
+</body>
+</html>
