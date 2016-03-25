@@ -106,3 +106,10 @@ after this, you can annotate your controller class like this:
     @RequestMapping(resource = "/p/(id)/x",methods = {MethodType.GET},produceType = {HttpContentTypes.APPLICATION_JSON,HttpContentTypes.TEXT_PLAIN})
         public int getX(@PathVariable("id")Integer id) {...}
     }
+
+Return type of Resquest mapping
+-------------------------------
+The method that is mapping a request can return:
+- a IHttpRequest
+- a IView
+- or any Object that can be converted to JSON or XML(with jaxb).

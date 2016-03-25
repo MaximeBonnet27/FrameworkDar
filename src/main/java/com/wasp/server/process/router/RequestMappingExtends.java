@@ -34,8 +34,8 @@ public class RequestMappingExtends extends RequestMapping {
     private final Object controller;
     private Method method;
     private ApplicationJarLoader jarLoader;
-    //if resource if define as "/.../(a)/.../(b)/"
-    //will contain {a -> 1 , b -> 2}
+    /**if resource if define as "/.../(a)/.../(b)/"
+    will contain {a -> 1 , b -> 2}*/
     private HashMap<String, Integer> pathIndexes;
 
     public RequestMappingExtends(RequestMapping delegate, Object controller, ApplicationJarLoader jarLoader) {

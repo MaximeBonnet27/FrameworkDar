@@ -12,6 +12,10 @@ import static com.wasp.util.httpComponent.request.enums.MethodType.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface RequestMapping {
+    /**
+     *
+     * @return regex to match a url
+     */
     String resource() default ".*";
 
     String[] methods() default {GET, HEAD, POST, PUT, DELETE, TRACE, OPTIONS, CONNECT, PATCH};
